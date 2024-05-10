@@ -2,7 +2,7 @@
 name: Feature request
 about: 기능 설명 및 구현
 title: ''
-labels: "\U0001FA84feature"
+labels: "\U0001FA84feature, \U0001FAE7refactor"
 assignees: ''
 
 ---
