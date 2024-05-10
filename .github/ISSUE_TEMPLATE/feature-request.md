@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: 기능 설명 및 구현
-title: ''
-labels: "\U0001FA84feature, \U0001FAE7refactor"
+title: "[feat]"
+labels: "\U0001FA84feature"
 assignees: ''
 
 ---
