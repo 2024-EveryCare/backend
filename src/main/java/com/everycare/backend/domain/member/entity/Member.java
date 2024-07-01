@@ -35,24 +35,43 @@ public class Member extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String email;
 
-    @Column(length = 20, nullable = false)
-    private String contact;
-
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private Gender gender;
 
     @Column(length = 20)
-    private LocalDate birthDate;
+    private LocalDate birthdate;
 
 
     //빌더
     @Builder
-    public Member(String name, String password, String email, String contact, Gender gender) {
+    public Member(String name, String password, String email, Gender gender, LocalDate birthdate) {
         this.name = name;
         this.password = password;
         this.email = email;
-        this.contact = contact;
         this.gender = gender;
+        this.birthdate = birthdate;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setbirthdate(LocalDate birthdate) {
+        this.birthdate = birthdate;
     }
 }
