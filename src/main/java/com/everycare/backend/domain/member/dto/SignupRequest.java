@@ -13,6 +13,6 @@ public class SignupRequest {
     private String email;
     private String password;
     private Gender gender;
-    private LocalDate BirthDate;
+    private LocalDate birthdate;
 
 }
