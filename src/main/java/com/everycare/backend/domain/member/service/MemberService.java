@@ -30,11 +30,11 @@ public class MemberService implements UserDetailsService {
         return memberRepository.findByEmail(email);
     }
 
-    public boolean checkPassword(Optional<Member> memberOptional, String password) {
+    public boolean checkPassword(Optional<Member> memberOptional, String rawPassword) {
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
             // 비밀번호 해싱 및 비교 로직을 구현
-            return member.getPassword().equals(password);
+            return passwordEncoder.matches(rawPassword, member.getPassword());
         } else {
             return false;
         }

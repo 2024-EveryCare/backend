@@ -31,7 +31,7 @@ pom.xml.next
 release.properties
 
 # Gradle
-.gradle
+.gradle/
 build/
 !gradle-wrapper.jar
 
@@ -89,3 +89,6 @@ spring.log
 Thumbs.db
 
 application.properties
+
+previous-compilation-data.bin
+workspace.xml
