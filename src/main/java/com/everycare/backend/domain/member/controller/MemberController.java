@@ -5,10 +5,6 @@ import com.everycare.backend.domain.member.entity.Member;
 import com.everycare.backend.domain.member.service.MemberService;
 import com.everycare.backend.global.common.RestApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,20 +31,7 @@ public class MemberController {
     @PostMapping(value = "/signup", produces = "application/json")
     @Operation(summary = "회원가입 API", description = "ID:이메일 형식, PW, 이름, 성별, 생년월일을 받습니다.")
     public ResponseEntity<RestApiResponse> registerUser(@RequestBody SignupRequest signupRequest) {
-        if (memberService.emailExists(signupRequest.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(RestApiResponse.of(EMAIL_ALREADY_EXISTS));
-        }
-
-        Member member = new Member();
-        member.setEmail(signupRequest.getEmail());
-        member.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        member.setName(signupRequest.getName());
-        member.setGender(signupRequest.getGender());
-        member.setbirthdate(signupRequest.getBirthdate()); // 날짜 형식 "yyyy-MM-dd"
-
-        memberService.createMember(member);
-
+        memberService.createMember(signupRequest);
         return ResponseEntity.ok(RestApiResponse.of(MEMBER_SIGNUP_SUCCESS));
     }
 
@@ -63,7 +46,6 @@ public class MemberController {
         Member member = optionalMember.get();
 
         if (memberService.checkPassword(Optional.of(member), loginRequest.getPassword())) {
-            System.out.println(loginRequest.getPassword());
             return ResponseEntity.ok(RestApiResponse.of(LOGIN_SUCCESS));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(INVALID_PASSWORD));

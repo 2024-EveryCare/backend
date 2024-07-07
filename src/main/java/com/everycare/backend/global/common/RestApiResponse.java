@@ -1,6 +1,5 @@
 package com.everycare.backend.global.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -42,29 +41,14 @@ public class RestApiResponse {
         this.data = data;
     }
 
+    public RestApiResponse(ErrorCode code){
+        this.code = code.getCode();
+        this.status = code.getStatus();
+        this.message = code.getMessage();
+    }
+
+    public RestApiResponse(HttpStatus status, String message){
+        this.status = status;
+        this.message = message;
+    }
 }
-
-
-//package com.everycare.backend.domain.member.dto;
-//
-//import com.fasterxml.jackson.annotation.JsonInclude;
-//import com.fasterxml.jackson.annotation.JsonProperty;
-//
-//@JsonInclude(JsonInclude.Include.NON_NULL)
-//public class SignupResponse {
-//
-//    @JsonProperty("code")
-//    private String code;
-//
-//    @JsonProperty("status")
-//    private String status;
-//
-//    @JsonProperty("message")
-//    private String message;
-//
-//    public SignupResponse(String code, String status, String message) {
-//        this.code = code;
-//        this.status = status;
-//        this.message = message;
-//    }
-//}
