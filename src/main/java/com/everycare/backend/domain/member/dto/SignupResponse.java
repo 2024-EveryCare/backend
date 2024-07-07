@@ -1,12 +1,26 @@
 package com.everycare.backend.domain.member.dto;
 
-public class SignupResponse {
-    private String message;
-    private boolean success;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public SignupResponse(String message, boolean success) {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SignupResponse {
+
+    @JsonProperty("code")
+    private String code;
+
+    @JsonProperty("status")
+    private String status;
+
+    @JsonProperty("message")
+    private String message;
+
+    public SignupResponse(String code, String status, String message) {
+        this.code = code;
+        this.status = status;
         this.message = message;
-        this.success = success;
     }
 
+    // getter and setter
 }
+

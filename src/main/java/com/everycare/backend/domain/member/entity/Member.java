@@ -42,6 +42,8 @@ public class Member extends BaseEntity {
     @Column(length = 20)
     private LocalDate birthdate;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
     //빌더
     @Builder
