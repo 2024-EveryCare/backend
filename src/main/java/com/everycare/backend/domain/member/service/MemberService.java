@@ -2,18 +2,25 @@ package com.everycare.backend.domain.member.service;
 
 import com.everycare.backend.domain.member.entity.Member;
 import com.everycare.backend.domain.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MemberService {
+@RequiredArgsConstructor
+public class MemberService implements UserDetailsService {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Member> getAllMembers() {
         return memberRepository.findAll();
@@ -70,5 +77,12 @@ public class MemberService {
 
     public boolean emailExists(String email) {
         return memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        return new org.springframework.security.core.userdetails.User(member.getEmail(), member.getPassword(), new ArrayList<>());
     }
 }
