@@ -37,6 +37,7 @@ public class SecurityConfig {
                                 "/",
                                 "/api/v1/**",
                                 "/index.html",
+                                "/upload.html", // 임의로 추가 - 403에러 해결!!
                                 "swagger/**",
                                 "swagger-ui/**",
                                 "api-docs/**",
