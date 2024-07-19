@@ -37,6 +37,11 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리 라이브러리
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2' // Jackson 모듈 : JSON 파싱
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // Spring WebFlux
+	implementation 'org.springframework.boot:spring-boot-starter-web' // Spring MVC
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'// http 요청
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'// http 요청
+	implementation 'org.apache.httpcomponents.core5:httpcore5:5.2' // HTTP 프로토콜을 처리
 
 }
 
