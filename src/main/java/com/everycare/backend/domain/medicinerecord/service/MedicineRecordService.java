@@ -65,28 +65,19 @@ public class MedicineRecordService {
                 String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&item_name=" + drugName;
                 try {
                     DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
-                    System.out.println(apiResponse);
                     if (apiResponse != null) {
-                        System.out.println(apiResponse);
-                        System.out.println(1);
                         DrugApiResponse.Item item = apiResponse.getBody().getItems().getItemList().get(1);
-                        System.out.println(2);
                         Drug newDrug = new Drug();
-                        System.out.println(3);
                         newDrug.setName(item.getItemName());
-                        System.out.println(4);
                         drugs.add(drugRepository.save(newDrug));
-                        System.out.println(5);
                     } else {
                         // API에서 찾지 못했을 경우, 입력된 이름을 그대로 저장
-                        System.out.println(6);
                         Drug newDrug = new Drug();
                         newDrug.setName(drugName);
                         drugs.add(drugRepository.save(newDrug));
                     }
                 } catch (Exception e) {
                     // 예외가 발생했을 경우, 입력된 이름을 그대로 저장
-                    System.out.println(7);
                     Drug newDrug = new Drug();
                     newDrug.setName(drugName);
                     drugs.add(drugRepository.save(newDrug));
