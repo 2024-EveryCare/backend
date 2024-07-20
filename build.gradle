@@ -24,6 +24,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux' // Spring WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -40,6 +41,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2' // Jackson 모듈 : JSON 파싱
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.0'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'// http 요청
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'// http 요청
+	implementation 'org.apache.httpcomponents.core5:httpcore5:5.2' // HTTP 프로토콜을 처리
 
 
 }
