@@ -20,7 +20,7 @@ import static com.everycare.backend.global.common.ErrorCode.*;
 import static com.everycare.backend.global.common.SuccessCode.*;
 
 @RestController
-@Tag(name = "Example", description = "Example API")
+@Tag(name = "Member API", description = "회원가입, 로그인 API ")
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {

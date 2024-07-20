@@ -12,7 +12,7 @@ spring:
     password: Everycare2024!
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   http:
       encoding:
       charset: UTF-8
