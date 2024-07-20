@@ -18,7 +18,7 @@ public class FlaskOcrController {
     private RestTemplate restTemplate;
 
     @PostMapping("/api/v1/ocr/upload")
-    public ResponseEntity<?> uploadImageToOCR(@RequestParam("file") MultipartFile file, @RequestParam("userID") String userID) {
+    public ResponseEntity<?> uploadImageToOCR(@RequestParam("file") MultipartFile file, @RequestParam("member_id") String member_id) {
         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";
 
         HttpHeaders headers = new HttpHeaders();
@@ -27,7 +27,7 @@ public class FlaskOcrController {
         // Multipart 요청을 생성하기 위해 MultiValueMap을 사용
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", file.getResource());
-        body.add("userID", userID);
+        body.add("member_id", member_id);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
