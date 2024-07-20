@@ -40,18 +40,19 @@ public class SecurityConfig {
                                 "swagger/**",
                                 "swagger-ui/**",
                                 "api-docs/**",
-                                "login"
+                                "/login"
                         ).permitAll()
+                        .requestMatchers("/user/**").hasAnyRole("user","center","admin")
                         .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
                 );
-//                .formLogin(form -> form
-//                        .loginPage("/login")
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .logoutSuccessUrl("/login")
-//                );
 
         return http.build();
     }

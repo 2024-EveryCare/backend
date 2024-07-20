@@ -1,5 +1,6 @@
 package com.everycare.backend.domain.member.entity;
 
+import com.everycare.backend.domain.medicinerecord.entity.MedicineRecord;
 import com.everycare.backend.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -12,6 +13,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,7 +23,7 @@ import java.time.LocalDate;
 @Where(clause = "is_deleted IS NULL")
 @Table(name = "member")
 public class Member extends BaseEntity {
-    //필드
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", unique = true, nullable = false)
@@ -44,6 +47,11 @@ public class Member extends BaseEntity {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedicineRecord> medicineRecords = new ArrayList<>();
+
 
     //빌더
     @Builder

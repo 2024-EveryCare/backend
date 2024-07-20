@@ -7,12 +7,12 @@ spring:
       password: 1111  # Replace with encrypted password using Spring Security
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/EverycareDB
+    url: jdbc:mysql://localhost:3306/everycaredb
     username: everycareroot
     password: Everycare2024!
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 springdoc:
   swagger-ui:
