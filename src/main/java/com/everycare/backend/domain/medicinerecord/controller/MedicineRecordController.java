@@ -1,5 +1,6 @@
 package com.everycare.backend.domain.medicinerecord.controller;
 
+import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
 import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.global.common.RestApiResponse;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.everycare.backend.global.common.SuccessCode.MEDICINE_RECORD_SUCCESS;
 
@@ -27,7 +30,23 @@ public class MedicineRecordController {
         medicineRecordService.saveRecord(memberId, request);
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
+
+
+    @GetMapping(value = "/findName", produces = "application/json")
+    @Operation(summary = "의약품 검색 API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 이름 리스트를 전부 전송")
+    public List<String> getDrugNames(@RequestParam List<String> drugNames) {
+        return medicineRecordService.findDrugNames(drugNames);
+    }
+
+    @GetMapping(value = "/{drugName}", produces = "application/json")
+    @Operation(summary = "의약품 상세정보 조회 API", description = "사용자가 선택한 의약품의 상세정보 조회 API")
+    public DrugDetails getDrugDetails(@PathVariable String drugName) {
+        return medicineRecordService.findDrugDetailsByName(drugName);
+    }
+
+
 }
+
 //    public ResponseEntity<RestApiResponse> createRecord(HttpSession session, @RequestBody MedicineRecordRequest request) {
 //        Long memberId = (Long) session.getAttribute("memberId");
 //        if (memberId == null) {
