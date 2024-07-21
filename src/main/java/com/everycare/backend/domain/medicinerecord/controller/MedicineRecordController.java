@@ -27,6 +27,7 @@ public class MedicineRecordController {
         medicineRecordService.saveRecord(memberId, request);
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
+}
 //    public ResponseEntity<RestApiResponse> createRecord(HttpSession session, @RequestBody MedicineRecordRequest request) {
 //        Long memberId = (Long) session.getAttribute("memberId");
 //        if (memberId == null) {
@@ -35,4 +36,3 @@ public class MedicineRecordController {
 //        medicineRecordService.saveRecord(memberId, request);
 //        return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
 //    }
-}
