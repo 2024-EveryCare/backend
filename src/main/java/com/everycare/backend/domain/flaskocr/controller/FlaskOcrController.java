@@ -1,5 +1,6 @@
 package com.everycare.backend.domain.flaskocr.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -12,12 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 // 인증된 세션에서 userID 가져와서 추가하는 과정 추가 예정 + Spring Security 설정(WebSecurityConfigurerAdapter) 추가 예정
 @RestController
+@Tag(name = "OCR 업로드 API", description = "사진 등록 API")
 public class FlaskOcrController {
 
     @Autowired
     private RestTemplate restTemplate;
 
-    @PostMapping("/api/v1/ocr/upload")
+    @PostMapping("/api/v1/medicines/photo")
     public ResponseEntity<?> uploadImageToOCR(@RequestParam("file") MultipartFile file, @RequestParam("member_id") String member_id) {
         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";
 
