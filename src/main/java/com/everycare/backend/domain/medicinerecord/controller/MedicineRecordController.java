@@ -31,6 +31,7 @@ public class MedicineRecordController {
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
+
     @GetMapping(value = "/findName", produces = "application/json")
     @Operation(summary = "의약품 검색 API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 이름 리스트를 전부 전송")
     public List<String> getDrugNames(@RequestParam List<String> drugNames) {
@@ -44,6 +45,8 @@ public class MedicineRecordController {
     }
 
 
+}
+
 //    public ResponseEntity<RestApiResponse> createRecord(HttpSession session, @RequestBody MedicineRecordRequest request) {
 //        Long memberId = (Long) session.getAttribute("memberId");
 //        if (memberId == null) {
@@ -52,4 +55,3 @@ public class MedicineRecordController {
 //        medicineRecordService.saveRecord(memberId, request);
 //        return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
 //    }
-}
