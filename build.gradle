@@ -27,7 +27,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-  implementation 'org.springframework.boot:spring-boot-starter-webflux' // Spring WebFlux
+  	implementation 'org.springframework.boot:spring-boot-starter-webflux' // Spring WebFlux
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -47,6 +47,9 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'// http 요청
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'// http 요청
 	implementation 'org.apache.httpcomponents.core5:httpcore5:5.2' // HTTP 프로토콜을 처리
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
 
 }

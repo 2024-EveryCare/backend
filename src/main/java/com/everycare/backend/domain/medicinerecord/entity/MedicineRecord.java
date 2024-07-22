@@ -34,7 +34,7 @@ public class MedicineRecord extends BaseEntity {
 
     @ManyToMany
     @JoinTable(
-            name = "MEDINCINE_RECORD_DRUG",
+            name = "MEDICINE_RECORD_DRUG",
             joinColumns = @JoinColumn(name = "record_id"),
             inverseJoinColumns = @JoinColumn(name = "drug_id")
     )
