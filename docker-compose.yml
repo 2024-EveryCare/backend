@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Everycare2024!
+      MYSQL_DATABASE: everycaredb
+      MYSQL_USER: everycareroot
+      MYSQL_PASSWORD: Everycare2024!
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - everycare-network
+#
+#  redis:
+#    image: redis:latest
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redis-data:/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/everycaredb
+      SPRING_DATASOURCE_USERNAME: everycareroot
+      SPRING_DATASOURCE_PASSWORD: Everycare2024!
+      # SPRING_REDIS_HOST: redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+    #  - redis
+    volumes:
+      - .:/app
+      - ./logs:/var/log/spring-boot
+    ports:
+      - "8080:8080"
+    networks:
+      - everycare-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/frontend
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+    command: >
+        sh -c "
+        npm install &&
+        npm run dev
+        "
+    networks:
+      - everycare-network
+
+  flask:
+    build:
+      context: ../flask-server
+      dockerfile: Dockerfile
+    container_name: flask-server
+    ports:
+      - "5001:5000"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+    volumes:
+      - ../flask-server:/flask-server
+    depends_on:
+      - mysql
+    #  - redis
+    deploy:
+      resources:
+        limits:
+          memory: 5g
+    networks:
+      - everycare-network
+
+networks:
+  everycare-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
