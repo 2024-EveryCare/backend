@@ -10,6 +10,8 @@ import com.everycare.backend.domain.medicinerecord.repository.DrugRepository;
 import com.everycare.backend.domain.medicinerecord.repository.MedicineRecordRepository;
 import com.everycare.backend.domain.member.entity.Member;
 import com.everycare.backend.domain.member.repository.MemberRepository;
+import com.everycare.backend.global.common.ErrorCode;
+import com.everycare.backend.global.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -89,24 +91,25 @@ public class MedicineRecordService {
         return drugs;
         }
 
-    public List<String> findDrugNames(List<String> drugNames) {
+    public List<String> findDrugNames(String drugName) {
         List<String> result = new ArrayList<>();
-        for (String drugName : drugNames) {
-            Optional<Drug> drugOpt = drugRepository.findByName(drugName);
-            if (drugOpt.isPresent()) {
-                result.add(drugOpt.get().getName());
-            } else {
-                // API에서 의약품 정보 조회
-                String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + drugName;
-                try {
-                    DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
-                    if (apiResponse != null && apiResponse.getBody() != null && apiResponse.getBody().getItems() != null) {
-                        List<DrugApiResponse.Item> itemList = apiResponse.getBody().getItems();
-                        result.addAll(itemList.stream().map(DrugApiResponse.Item::getItemName).collect(Collectors.toList()));
-                    }
-                } catch (Exception e) {
-                    // 예외 발생 시 무시
+        Optional<Drug> drugOpt = drugRepository.findByName(drugName);
+        if (drugOpt.isPresent()) {
+            result.add(drugOpt.get().getName());
+        } else {
+            // API에서 의약품 정보 조회
+            String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + drugName;
+            try {
+                DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
+                if (apiResponse != null && apiResponse.getBody() != null && apiResponse.getBody().getItems() != null) {
+                    List<DrugApiResponse.Item> itemList = apiResponse.getBody().getItems();
+                    result.addAll(itemList.stream().map(DrugApiResponse.Item::getItemName).collect(Collectors.toList()));
                 }
+            } catch (Exception e) {
+                // 예외 발생 시 무시
+            }
+            if (result.isEmpty()) {
+                throw new BusinessException(ErrorCode.DRUG_NOT_FOUND);
             }
         }
         return result;
