@@ -28,7 +28,9 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
-
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
 
 springdoc:
   swagger-ui:
@@ -48,3 +50,5 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/v1/**
+
+
