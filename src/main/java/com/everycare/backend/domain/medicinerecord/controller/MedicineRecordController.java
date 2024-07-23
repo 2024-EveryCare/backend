@@ -28,8 +28,9 @@ public class MedicineRecordController {
 
     @PostMapping(value = "/direct-records/{memberId}", produces = "application/json")
     @Operation(summary = "직접 복용내역 입력 API", description = "OCR없이 직접 복용 내역을 등록합니다.")
-    public ResponseEntity<RestApiResponse> createRecord(@PathVariable Long memberId, @RequestBody MedicineRecordRequest request) {
-        medicineRecordService.saveRecord(memberId, request);
+    public ResponseEntity<RestApiResponse> createRecord(@PathVariable String memberId, @RequestBody MedicineRecordRequest request) {
+        Long memberIdLong = Long.parseLong(memberId);
+        medicineRecordService.saveRecord(memberIdLong, request);
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
