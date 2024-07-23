@@ -38,6 +38,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/everycaredb
       SPRING_DATASOURCE_USERNAME: everycareroot
       SPRING_DATASOURCE_PASSWORD: Everycare2024!
+      SPRING_SECURITY_USER_NAME: user
+      SPRING_SECURITY_USER_PASSWORD: 1111
       # SPRING_REDIS_HOST: redis
     depends_on:
       mysql:
@@ -77,6 +79,7 @@ services:
       context: ../flask-server
       dockerfile: Dockerfile
     container_name: flask-server
+    command: gunicorn --timeout 120 -w 4 -b 0.0.0.0:5000 app:app
     ports:
       - "5001:5000"
     environment:

@@ -43,11 +43,11 @@ public class SecurityConfig {
                                 "api-docs/**",
                                 "/login"
                         ).permitAll()
-                        .requestMatchers("/user/**").hasAnyRole("user","center","admin")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .defaultSuccessUrl("/swagger-ui/index.html", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -64,7 +64,9 @@ public class SecurityConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "http://localhost:8080"));
+                "http://localhost:8080",
+                "http://localhost:5173",
+                "http://localhost:5000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
