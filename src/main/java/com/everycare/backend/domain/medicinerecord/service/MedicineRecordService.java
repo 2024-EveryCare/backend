@@ -1,9 +1,6 @@
 package com.everycare.backend.domain.medicinerecord.service;
 
-import com.everycare.backend.domain.medicinerecord.dto.DetailedDrugApiResponse;
-import com.everycare.backend.domain.medicinerecord.dto.DrugApiResponse;
-import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
-import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
+import com.everycare.backend.domain.medicinerecord.dto.*;
 import com.everycare.backend.domain.medicinerecord.entity.Drug;
 import com.everycare.backend.domain.medicinerecord.entity.MedicineRecord;
 import com.everycare.backend.domain.medicinerecord.repository.DrugRepository;
@@ -114,6 +111,32 @@ public class MedicineRecordService {
         }
         return result;
     }
+
+    public List<DrugInfoDetails> findDrugInfos(String drugName) {
+        String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + drugName;
+        List<DrugInfoDetails> result = new ArrayList<>();
+
+        try {
+            DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
+            if (apiResponse != null && apiResponse.getBody() != null && apiResponse.getBody().getItems() != null) {
+                List<DrugApiResponse.Item> itemList = apiResponse.getBody().getItems();
+                for (DrugApiResponse.Item item : itemList) {
+                    DrugInfoDetails details = new DrugInfoDetails();
+                    details.setImageUrl(item.getBigPrdtImgUrl());
+                    details.setName(item.getItemName());
+                    details.setMainIngredient(item.getItemIngrName());
+                    details.setCompanyName(item.getEntpName());
+                    details.setClassification(item.getSpcltyPblc());
+                    result.add(details);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BusinessException(ErrorCode.DRUG_NOT_FOUND);
+        }
+        return result;
+    }
+
 
     public DrugDetails findDrugDetailsByName(String name) {
         String apiUrl = DRUG_INFO_API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + name;

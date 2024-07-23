@@ -23,8 +23,9 @@ public class MedicineCorrectionController {
 
     @PostMapping(value = "/{memberId}", produces = "application/json")
     @Operation(summary = "OCR 결과 등록 API", description = "수정된 OCR 결과 복용 내역을 데이터베이스에 등록합니다.")
-    public ResponseEntity<RestApiResponse> createOcrResult(@PathVariable Long memberId, @RequestBody MedicineOcrCorrection request) {
-        medicineOCRCorrectionService.saveOcrResult(memberId, request);
+    public ResponseEntity<RestApiResponse> createOcrResult(@PathVariable String memberId, @RequestBody MedicineOcrCorrection request) {
+        Long memberIdLong = Long.parseLong(memberId);
+        medicineOCRCorrectionService.saveOcrResult(memberIdLong, request);
         return ResponseEntity.ok(RestApiResponse.of(OCR_RESULT_SUCCESS));
     }
 }
