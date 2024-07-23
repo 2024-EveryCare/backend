@@ -15,6 +15,9 @@ public enum ErrorCode {
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST,"E004", "이메일 형식이 올바르지 않습니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST,"E005", "비밀번호 형식이 올바르지 않습니다."),
 
+    // drug
+    DRUG_NOT_FOUND(HttpStatus.NOT_FOUND, "E006", "일치하는 항목이 없습니다."),
+
     //generic
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500", "내부 서버 오류")
     ;

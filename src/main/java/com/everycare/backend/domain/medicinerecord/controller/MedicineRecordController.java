@@ -4,6 +4,7 @@ import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
 import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.global.common.RestApiResponse;
+import com.everycare.backend.global.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.everycare.backend.global.common.SuccessCode.FIND_DRUG_SUCCESS;
 import static com.everycare.backend.global.common.SuccessCode.MEDICINE_RECORD_SUCCESS;
 
 @RestController
@@ -32,10 +34,16 @@ public class MedicineRecordController {
     }
 
 
-    @GetMapping(value = "/findName", produces = "application/json")
+    @GetMapping(value = "/findName/{drugName}", produces = "application/json")
     @Operation(summary = "의약품 검색 API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 이름 리스트를 전부 전송")
-    public List<String> getDrugNames(@RequestParam List<String> drugNames) {
-        return medicineRecordService.findDrugNames(drugNames);
+    public ResponseEntity<RestApiResponse> getDrugNames(@PathVariable String drugName) {
+        List<String> drugNames =  medicineRecordService.findDrugNames(drugName);
+        return ResponseEntity.ok(RestApiResponse.of(FIND_DRUG_SUCCESS, drugNames));
+    }
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<?> handleDrugNotFoundException(BusinessException ex) {
+        return ResponseEntity.status(ex.getErrorCode().getStatus())
+                .body(RestApiResponse.of(ex.getErrorCode()));
     }
 
     @GetMapping(value = "/{drugName}", produces = "application/json")

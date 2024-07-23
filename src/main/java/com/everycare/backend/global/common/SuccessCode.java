@@ -14,6 +14,7 @@
 
         //medicine
         MEDICINE_RECORD_SUCCESS(HttpStatus.CREATED, "R001", "직접 복용 기록 입력하기 성공"),
+        FIND_DRUG_SUCCESS(HttpStatus.OK, "F001", "검색한 약물 결과입니다."),
 
         OCR_RESULT_SUCCESS(HttpStatus.CREATED, "R002", "OCR 결과 등록 성공");
 
