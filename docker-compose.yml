@@ -66,6 +66,8 @@ services:
       - backend
     environment:
       - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+
     command: >
         sh -c "
         npm install &&
