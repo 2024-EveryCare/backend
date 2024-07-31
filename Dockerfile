@@ -10,6 +10,9 @@ WORKDIR /backend
 
 VOLUME /tmp
 
+# dos2unix 설치
+RUN microdnf install -y dos2unix
+
 # Gradle wrapper 및 프로젝트 의존성 복사
 COPY gradlew .
 COPY gradle/wrapper/gradle-wrapper.jar gradle/wrapper/
@@ -18,6 +21,9 @@ COPY gradle .gradle/
 COPY build.gradle .
 COPY settings.gradle .
 COPY src ./src
+
+# gradlew 파일의 줄 끝 문자를 Unix 스타일로 변환
+RUN dos2unix gradlew
 
 RUN chmod +x ./gradlew
 # gradlew 실행권한 부여
