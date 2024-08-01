@@ -95,7 +95,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 5g
+          memory: 16g
     networks:
       - everycare-network
 
