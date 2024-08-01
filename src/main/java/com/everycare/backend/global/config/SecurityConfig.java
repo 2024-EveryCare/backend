@@ -38,6 +38,7 @@ public class SecurityConfig {
                                 "/api/v1/**",
                                 "/index.html",
                                 "/upload.html", // 임의로 추가 - 403에러 해결!!
+                                "/login.html",
                                 "swagger/**",
                                 "swagger-ui/**",
                                 "api-docs/**",
@@ -66,7 +67,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:8080",
                 "http://localhost:5173",
-                "http://localhost:5000"));
+                "http://localhost:5000",
+                "http://flask-server:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));

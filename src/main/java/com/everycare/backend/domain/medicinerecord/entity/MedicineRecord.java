@@ -44,7 +44,7 @@ public class MedicineRecord extends BaseEntity {
     private String disease;
     private LocalDate intakeStart;
     private LocalDate intakeEnd;
-    private int intakeDaily;
+    private String intakeDaily;
     private int intakeCycle;
 
 

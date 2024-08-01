@@ -14,7 +14,7 @@ public class MedicineRecordRequest {
     private String disease;
     private LocalDate intakeStart;
     private LocalDate intakeEnd;
-    private int intakeDaily;
+    private String intakeDaily;
     private int intakeCycle;
 
 

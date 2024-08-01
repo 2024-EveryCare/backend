@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -171,6 +172,33 @@ public class MedicineRecordService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<MonthlyMedicineRecordResponse> getMedicineRecordsForMonth(Long memberId, LocalDate date) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        LocalDate startOfMonth = date.withDayOfMonth(1);
+        LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+
+        List<MedicineRecord> records = medicineRecordRepository.findByMemberAndIntakeStartBetween(member, startOfMonth, endOfMonth);
+
+        return records.stream()
+                .collect(Collectors.groupingBy(MedicineRecord::getIntakeStart))
+                .entrySet().stream()
+                .map(entry -> {
+                    MonthlyMedicineRecordResponse response = new MonthlyMedicineRecordResponse();
+                    response.setDate(entry.getKey());
+                    response.setRecords(entry.getValue().stream().map(record -> {
+                        MedicineRecordResponse recordResponse = new MedicineRecordResponse();
+                        recordResponse.setDrugNames(record.getDrugs().stream().map(Drug::getName).collect(Collectors.toList()));
+                        recordResponse.setIntakeDaily(record.getIntakeDaily());
+                        recordResponse.setIntakeStart(record.getIntakeStart());
+                        recordResponse.setIntakeEnd(record.getIntakeEnd());
+                        return recordResponse;
+                    }).collect(Collectors.toList()));
+                    return response;
+                }).collect(Collectors.toList());
     }
 
 }
