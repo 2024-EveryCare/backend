@@ -3,6 +3,7 @@ package com.everycare.backend.domain.medicinerecord.controller;
 import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
 import com.everycare.backend.domain.medicinerecord.dto.DrugInfoDetails;
 import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
+import com.everycare.backend.domain.medicinerecord.dto.MonthlyMedicineRecordResponse;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.exception.BusinessException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.everycare.backend.global.common.SuccessCode.*;
@@ -59,6 +61,16 @@ public class MedicineRecordController {
     @Operation(summary = "의약품 상세정보 조회 API", description = "사용자가 선택한 의약품의 상세정보 조회 API")
     public DrugDetails getDrugDetails(@PathVariable String drugName) {
         return medicineRecordService.findDrugDetailsByName(drugName);
+    }
+
+
+    @GetMapping(value = "/records/{memberId}/{date}", produces = "application/json")
+    @Operation(summary = "사용자 복용내역 조회 API", description = "사용자가 입력한 날짜에 해당하는 복용내역을 조회한다.")
+    public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth(@PathVariable String memberId, @PathVariable String date) {
+        Long memberIdLong = Long.parseLong(memberId);
+        LocalDate localDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
+        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberIdLong, localDate);
+        return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 
 
