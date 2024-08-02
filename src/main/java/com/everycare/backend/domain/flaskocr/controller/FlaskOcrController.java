@@ -33,7 +33,7 @@ public class FlaskOcrController {
 
     public static class UploadRequest {
         private MultipartFile file;
-        private Long member_id;
+        private String member_id;
 
         // getters and setters
         public MultipartFile getFile() {
@@ -44,11 +44,11 @@ public class FlaskOcrController {
             this.file = file;
         }
 
-        public Long getMember_id() {
+        public String getMember_id() {
             return member_id;
         }
 
-        public void setMember_id(Long member_id) {
+        public void setMember_id(String member_id) {
             this.member_id = member_id;
         }
     }
@@ -66,7 +66,7 @@ public class FlaskOcrController {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
         MultipartFile file = uploadRequest.getFile();
-        Long member_id = uploadRequest.getMember_id();
+        String member_id = uploadRequest.getMember_id();
 
         // 임시 파일 생성
         File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
