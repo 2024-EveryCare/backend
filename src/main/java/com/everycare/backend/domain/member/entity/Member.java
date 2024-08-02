@@ -45,6 +45,10 @@ public class Member extends BaseEntity {
     @Column(length = 20)
     private LocalDate birthdate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Role role;
+
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
@@ -55,12 +59,13 @@ public class Member extends BaseEntity {
 
     //빌더
     @Builder
-    public Member(String name, String password, String email, Gender gender, LocalDate birthdate) {
+    public Member(String name, String password, String email, Gender gender, LocalDate birthdate, Role role) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.gender = gender;
         this.birthdate = birthdate;
+        this.role = role;
     }
 
 
@@ -83,5 +88,9 @@ public class Member extends BaseEntity {
 
     public void setbirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public void  setRole(Role role){
+        this.role = role;
     }
 }
