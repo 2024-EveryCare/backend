@@ -7,6 +7,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,10 +31,32 @@ public class FlaskOcrController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @PostMapping("/api/v1/medicines/photo")
-    public ResponseEntity<?> uploadImageToOCR(@RequestParam("file") MultipartFile file, @RequestParam("member_id") String member_id) throws IOException {
+    public static class UploadRequest {
+        private MultipartFile file;
+        private String member_id;
+
+        // getters and setters
+        public MultipartFile getFile() {
+            return file;
+        }
+
+        public void setFile(MultipartFile file) {
+            this.file = file;
+        }
+
+        public String getMember_id() {
+            return member_id;
+        }
+
+        public void setMember_id(String member_id) {
+            this.member_id = member_id;
+        }
+    }
+
+    @PostMapping(value = "/api/v1/medicines/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> uploadImageToOCR(@ModelAttribute UploadRequest uploadRequest) throws IOException {
         String flaskServerUrl = "http://flask-server:5000/api/v1/medicines/upload";     // 도커용
-        // String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
+//         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -41,6 +64,9 @@ public class FlaskOcrController {
 
         // Multipart 요청을 생성하기 위해 MultiValueMap을 사용
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+        MultipartFile file = uploadRequest.getFile();
+        String member_id = uploadRequest.getMember_id();
 
         // 임시 파일 생성
         File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
