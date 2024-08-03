@@ -18,6 +18,9 @@ public enum ErrorCode {
     // drug
     DRUG_NOT_FOUND(HttpStatus.NOT_FOUND, "E006", "일치하는 항목이 없습니다."),
 
+    // authentication
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "E007", "사용자가 인증되지 않았습니다."),
+
     //generic
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500", "내부 서버 오류")
     ;
