@@ -76,28 +76,28 @@ services:
     networks:
       - everycare-network
 
-  flask:
-    build:
-      context: ../flask-server
-      dockerfile: Dockerfile
-    container_name: flask-server
-    command: gunicorn --timeout 120 -w 4 -b 0.0.0.0:5000 app:app
-    ports:
-      - "5001:5000"
-    environment:
-      FLASK_APP: app.py
-      FLASK_RUN_HOST: 0.0.0.0
-    volumes:
-      - ../flask-server:/flask-server
-    depends_on:
-      - mysql
-    #  - redis
-    deploy:
-      resources:
-        limits:
-          memory: 16g
-    networks:
-      - everycare-network
+#  flask:
+#    build:
+#      context: ../flask-server
+#      dockerfile: Dockerfile
+#    container_name: flask-server
+#    command: gunicorn --timeout 120 -w 4 -b 0.0.0.0:5000 app:app
+#    ports:
+#      - "5001:5000"
+#    environment:
+#      FLASK_APP: app.py
+#      FLASK_RUN_HOST: 0.0.0.0
+#    volumes:
+#      - ../flask-server:/flask-server
+#    depends_on:
+#      - mysql
+#    #  - redis
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 16g
+#    networks:
+#      - everycare-network
 
 networks:
   everycare-network:
