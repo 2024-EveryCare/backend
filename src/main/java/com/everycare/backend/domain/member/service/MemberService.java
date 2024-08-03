@@ -2,6 +2,7 @@ package com.everycare.backend.domain.member.service;
 
 import com.everycare.backend.domain.member.dto.SignupRequest;
 import com.everycare.backend.domain.member.entity.Member;
+import com.everycare.backend.domain.member.entity.Role;
 import com.everycare.backend.domain.member.exception.EmailAlreadyExistsException;
 import com.everycare.backend.domain.member.exception.InvalidEmailFormatException;
 import com.everycare.backend.domain.member.exception.InvalidPasswordFormatException;
@@ -34,18 +35,17 @@ public class MemberService implements UserDetailsService {
         return memberRepository.findAll();
     }
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public Member findByEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+        return member;
     }
 
-    public boolean checkPassword(Optional<Member> memberOptional, String rawPassword) {
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            // 비밀번호 해싱 및 비교 로직을 구현
-            return passwordEncoder.matches(rawPassword, member.getPassword());
-        } else {
-            return false;
-        }
+    public boolean checkPassword(Member member, String rawPassword) {
+        // 비밀번호 해싱 및 비교 로직을 구현
+        return passwordEncoder.matches(rawPassword, member.getPassword());
     }
 
 
@@ -59,7 +59,7 @@ public class MemberService implements UserDetailsService {
     }
 
     public Member createMember(SignupRequest signupRequest) {
-        if (memberRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
+        if (memberRepository.existsByEmail(signupRequest.getEmail())) {
             throw new EmailAlreadyExistsException();
         }
         if (!isValidEmail(signupRequest.getEmail())) {
@@ -75,6 +75,8 @@ public class MemberService implements UserDetailsService {
         member.setName(signupRequest.getName());
         member.setGender(signupRequest.getGender());
         member.setbirthdate(signupRequest.getBirthdate()); // 날짜 형식 "yyyy-MM-dd"
+        member.setRole(Role.USER);
+
 
         return memberRepository.save(member);
     }
@@ -103,8 +105,10 @@ public class MemberService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
         return new org.springframework.security.core.userdetails.User(member.getEmail(), member.getPassword(), new ArrayList<>());
     }
 
