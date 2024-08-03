@@ -40,7 +40,7 @@ public class MedicineRecordService {
 
     public MedicineRecord saveRecord(Long memberId, MedicineRecordRequest request) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Drug> drugs = findOrFetchDrug(request.getDrugNames());
 
@@ -63,27 +63,9 @@ public class MedicineRecordService {
             if (drugOpt.isPresent()) {
                 drugs.add(drugOpt.get());
             } else {
-                // API에서 의약품 정보 조회
-                String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + drugName;
-                try {
-                    DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
-                    if (apiResponse != null) {
-//                        DrugApiResponse.Item item = apiResponse.getBody().getItems;
-                        Drug newDrug = new Drug();
-//                        newDrug.setName(item.getItemName());
-                        drugs.add(drugRepository.save(newDrug));
-                    } else {
-                        // API에서 찾지 못했을 경우, 입력된 이름을 그대로 저장
-                        Drug newDrug = new Drug();
-                        newDrug.setName(drugName);
-                        drugs.add(drugRepository.save(newDrug));
-                    }
-                } catch (Exception e) {
-                    // 예외가 발생했을 경우, 입력된 이름을 그대로 저장
-                    Drug newDrug = new Drug();
-                    newDrug.setName(drugName);
-                    drugs.add(drugRepository.save(newDrug));
-                }
+                Drug newDrug = new Drug();
+                newDrug.setName(drugName);
+                drugs.add(drugRepository.save(newDrug));
             }
         }
         return drugs;
@@ -200,6 +182,27 @@ public class MedicineRecordService {
                     return response;
                 }).collect(Collectors.toList());
     }
+
+
+    public void deleteRecord(Long memberId, String drugName, LocalDate intakeStart, LocalDate intakeEnd) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<MedicineRecord> records = medicineRecordRepository.findByMemberAndIntakeStartAndIntakeEnd(member, intakeStart, intakeEnd);
+        MedicineRecord recordToDeleteDrugFrom = records.stream()
+                .filter(record -> record.getDrugs().stream().anyMatch(drug -> drug.getName().equals(drugName)))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEDICINE_RECORD_NOT_FOUND));
+
+        Drug drugToDelete = recordToDeleteDrugFrom.getDrugs().stream()
+                .filter(drug -> drug.getName().equals(drugName))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.DRUG_NOT_FOUND));
+
+        recordToDeleteDrugFrom.getDrugs().remove(drugToDelete);
+        medicineRecordRepository.save(recordToDeleteDrugFrom);
+    }
+
 
 }
 

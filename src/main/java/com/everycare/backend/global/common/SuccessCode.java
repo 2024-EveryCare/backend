@@ -17,7 +17,8 @@
         FIND_DRUG_INFO_SUCCESS(HttpStatus.OK, "F002", "검색한 약물 부가 정보 결과입니다."),
         MEDICINE_RECORD_SUCCESS(HttpStatus.CREATED, "R001", "직접 복용 기록 입력하기 성공"),
         OCR_RESULT_SUCCESS(HttpStatus.CREATED, "R002", "OCR 결과 등록 성공"),
-        FIND_MEDICINE_RECORD_SUCCESS(HttpStatus.OK, "R003", "복용 내역 조회 성공")
+        FIND_MEDICINE_RECORD_SUCCESS(HttpStatus.OK, "R003", "복용 내역 조회 성공"),
+        MEDICINE_RECORD_DELETE_SUCCESS(HttpStatus.OK, "R004", "복용 내역 삭제 성공")
         ;
 
         private HttpStatus status;

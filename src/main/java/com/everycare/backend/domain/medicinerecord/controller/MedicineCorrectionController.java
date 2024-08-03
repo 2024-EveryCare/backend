@@ -1,7 +1,6 @@
 package com.everycare.backend.domain.medicinerecord.controller;
 
-import com.everycare.backend.domain.medicinerecord.dto.MedicineOcrCorrection;
-import com.everycare.backend.domain.medicinerecord.service.MedicineOCRCorrectionService;
+import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.domain.member.dto.CustomUserDetails;
 import com.everycare.backend.global.common.ErrorCode;
@@ -23,8 +22,9 @@ import static com.everycare.backend.global.common.SuccessCode.OCR_RESULT_SUCCESS
 @RequestMapping("/api/v1/medicines/photo")
 @RequiredArgsConstructor
 public class MedicineCorrectionController {
+
     @Autowired
-    private MedicineOCRCorrectionService medicineOCRCorrectionService;
+    private MedicineRecordService medicineRecordService;
 
     private Long getAuthenticatedMemberId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -39,12 +39,13 @@ public class MedicineCorrectionController {
 
     @PostMapping(value = "/{memberId}", produces = "application/json")
     @Operation(summary = "OCR 결과 등록 API", description = "수정된 OCR 결과 복용 내역을 데이터베이스에 등록합니다.")
-    public ResponseEntity<RestApiResponse> createOcrResult( @RequestBody MedicineOcrCorrection request) {
+
+    public ResponseEntity<RestApiResponse> createOcrResult(@RequestBody MedicineRecordRequest request) {
         Long memberId = getAuthenticatedMemberId();
         if (memberId == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
         }
-        medicineOCRCorrectionService.saveOcrResult(memberId, request);
+        medicineRecordService.saveRecord(memberId, request);
         return ResponseEntity.ok(RestApiResponse.of(OCR_RESULT_SUCCESS));
     }
 }
