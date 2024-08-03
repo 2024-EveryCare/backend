@@ -1,7 +1,6 @@
 package com.everycare.backend.domain.medicinerecord.controller;
 
-import com.everycare.backend.domain.medicinerecord.dto.MedicineOcrCorrection;
-import com.everycare.backend.domain.medicinerecord.service.MedicineOCRCorrectionService;
+import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.global.common.RestApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,14 +17,15 @@ import static com.everycare.backend.global.common.SuccessCode.OCR_RESULT_SUCCESS
 @RequestMapping("/api/v1/medicines/photo")
 @RequiredArgsConstructor
 public class MedicineCorrectionController {
+
     @Autowired
-    private MedicineOCRCorrectionService medicineOCRCorrectionService;
+    private MedicineRecordService medicineRecordService;
 
     @PostMapping(value = "/{memberId}", produces = "application/json")
     @Operation(summary = "OCR 결과 등록 API", description = "수정된 OCR 결과 복용 내역을 데이터베이스에 등록합니다.")
-    public ResponseEntity<RestApiResponse> createOcrResult(@PathVariable String memberId, @RequestBody MedicineOcrCorrection request) {
+    public ResponseEntity<RestApiResponse> createOcrResult(@PathVariable String memberId, @RequestBody MedicineRecordRequest request) {
         Long memberIdLong = Long.parseLong(memberId);
-        medicineOCRCorrectionService.saveOcrResult(memberIdLong, request);
+        medicineRecordService.saveRecord(memberIdLong, request);
         return ResponseEntity.ok(RestApiResponse.of(OCR_RESULT_SUCCESS));
     }
 }

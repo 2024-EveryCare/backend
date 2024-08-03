@@ -1,17 +1,22 @@
 package com.everycare.backend.domain.medicinerecord.controller;
 
-import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
-import com.everycare.backend.domain.medicinerecord.dto.DrugInfoDetails;
-import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
-import com.everycare.backend.domain.medicinerecord.dto.MonthlyMedicineRecordResponse;
+import com.everycare.backend.domain.flaskocr.controller.UploadController;
+import com.everycare.backend.domain.medicinerecord.dto.*;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
+import com.everycare.backend.domain.member.dto.CustomUserDetails;
+import com.everycare.backend.global.common.ErrorCode;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,6 +32,8 @@ public class MedicineRecordController {
 
     @Autowired
     private MedicineRecordService medicineRecordService;
+
+    private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     @PostMapping(value = "/direct-records/{memberId}", produces = "application/json")
     @Operation(summary = "직접 복용내역 입력 API", description = "OCR없이 직접 복용 내역을 등록합니다.")
@@ -71,6 +78,25 @@ public class MedicineRecordController {
         LocalDate localDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
         List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberIdLong, localDate);
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
+    }
+
+
+    @DeleteMapping(value = "/records", produces = "application/json")
+    @Operation(summary = "복용내역 삭제 API", description = "사용자의 특정 복용내역을 삭제합니다.")
+    public ResponseEntity<RestApiResponse> deleteRecord(@RequestBody DeleteRecordRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            Long memberId = userDetails.getMemberId();
+
+            medicineRecordService.deleteRecord(memberId, request.getDrugName(), request.getIntakeStart(), request.getIntakeEnd());
+            return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_DELETE_SUCCESS));
+        } else {
+            logger.error("User details not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(ErrorCode.UNAUTHORIZED_USER));
+        }
     }
 
 
