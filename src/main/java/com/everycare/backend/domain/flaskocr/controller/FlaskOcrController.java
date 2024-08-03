@@ -3,6 +3,7 @@ package com.everycare.backend.domain.flaskocr.controller;
 import com.everycare.backend.domain.member.dto.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -12,7 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,6 +33,7 @@ public class FlaskOcrController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Getter
     public static class UploadRequest {
         private MultipartFile file;
         private String member_id;
@@ -74,8 +74,8 @@ public class FlaskOcrController {
         }
 
 //        String flaskServerUrl = "http://flask-server:5000/api/v1/medicines/upload";     // 도커용
-//        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";     // 도커 스프링부트 - 로컬 플라스크
-        String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
+        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
+//         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
