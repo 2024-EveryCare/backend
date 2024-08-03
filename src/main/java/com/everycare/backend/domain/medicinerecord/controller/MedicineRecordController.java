@@ -5,6 +5,8 @@ import com.everycare.backend.domain.medicinerecord.dto.DrugInfoDetails;
 import com.everycare.backend.domain.medicinerecord.dto.MedicineRecordRequest;
 import com.everycare.backend.domain.medicinerecord.dto.MonthlyMedicineRecordResponse;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
+import com.everycare.backend.domain.member.dto.CustomUserDetails;
+import com.everycare.backend.global.common.ErrorCode;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,11 +32,26 @@ public class MedicineRecordController {
     @Autowired
     private MedicineRecordService medicineRecordService;
 
+    private Long getAuthenticatedMemberId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            return userDetails.getMemberId();
+        }
+        return null;
+    }
+
     @PostMapping(value = "/direct-records/{memberId}", produces = "application/json")
     @Operation(summary = "직접 복용내역 입력 API", description = "OCR없이 직접 복용 내역을 등록합니다.")
-    public ResponseEntity<RestApiResponse> createRecord(@PathVariable String memberId, @RequestBody MedicineRecordRequest request) {
-        Long memberIdLong = Long.parseLong(memberId);
-        medicineRecordService.saveRecord(memberIdLong, request);
+    public ResponseEntity<RestApiResponse> createRecord(@RequestBody MedicineRecordRequest request) {
+
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+        medicineRecordService.saveRecord(memberId, request);
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
@@ -66,10 +85,14 @@ public class MedicineRecordController {
 
     @GetMapping(value = "/records/{memberId}/{date}", produces = "application/json")
     @Operation(summary = "사용자 복용내역 조회 API", description = "사용자가 입력한 날짜에 해당하는 복용내역을 조회한다.")
-    public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth(@PathVariable String memberId, @PathVariable String date) {
-        Long memberIdLong = Long.parseLong(memberId);
+    public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth( @PathVariable String date) {
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         LocalDate localDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
-        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberIdLong, localDate);
+        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberId, localDate);
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 

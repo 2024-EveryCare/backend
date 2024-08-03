@@ -1,11 +1,14 @@
 package com.everycare.backend.domain.flaskocr.controller;
 
+import com.everycare.backend.domain.member.dto.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -55,8 +58,23 @@ public class FlaskOcrController {
 
     @PostMapping(value = "/api/v1/medicines/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> uploadImageToOCR(@ModelAttribute UploadRequest uploadRequest) throws IOException {
+
+        // 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        Long memberId = null;
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            memberId = userDetails.getMemberId();
+        }
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: member ID not found");
+        }
+
 //        String flaskServerUrl = "http://flask-server:5000/api/v1/medicines/upload";     // 도커용
-        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";
+        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
 //         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
 
         HttpHeaders headers = new HttpHeaders();
@@ -67,7 +85,6 @@ public class FlaskOcrController {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
         MultipartFile file = uploadRequest.getFile();
-        String member_id = uploadRequest.getMember_id();
 
         // 임시 파일 생성
         File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
@@ -77,7 +94,7 @@ public class FlaskOcrController {
         }
 
         body.add("file", new FileSystemResource(convFile));
-        body.add("member_id", member_id);
+        body.add("member_id", memberId.toString()); // Long -> String 캐스팅
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
