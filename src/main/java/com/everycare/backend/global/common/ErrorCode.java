@@ -18,10 +18,13 @@ public enum ErrorCode {
     // drug
     DRUG_NOT_FOUND(HttpStatus.NOT_FOUND, "E006", "일치하는 의약품 항목이 없습니다."),
 
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "E007", "사용자가 인증되지 않았습니다."),
+  
     // medicine record
     MEDICINE_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "E008", "해당 복용 내역을 찾을 수 없습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "E009", "회원 정보를 찾을 수 없습니다."),
-    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "E007", "사용자가 인증되지 않았습니다."),
+
+    //generic
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E500", "내부 서버 오류")
     ;
     private HttpStatus status;

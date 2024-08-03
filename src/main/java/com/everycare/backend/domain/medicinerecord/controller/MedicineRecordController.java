@@ -33,13 +33,30 @@ public class MedicineRecordController {
     @Autowired
     private MedicineRecordService medicineRecordService;
 
+
     private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
+
+    private Long getAuthenticatedMemberId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            return userDetails.getMemberId();
+        }
+        return null;
+    }
+
 
     @PostMapping(value = "/direct-records/{memberId}", produces = "application/json")
     @Operation(summary = "직접 복용내역 입력 API", description = "OCR없이 직접 복용 내역을 등록합니다.")
-    public ResponseEntity<RestApiResponse> createRecord(@PathVariable String memberId, @RequestBody MedicineRecordRequest request) {
-        Long memberIdLong = Long.parseLong(memberId);
-        medicineRecordService.saveRecord(memberIdLong, request);
+    public ResponseEntity<RestApiResponse> createRecord(@RequestBody MedicineRecordRequest request) {
+
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+        medicineRecordService.saveRecord(memberId, request);
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
@@ -73,10 +90,14 @@ public class MedicineRecordController {
 
     @GetMapping(value = "/records/{memberId}/{date}", produces = "application/json")
     @Operation(summary = "사용자 복용내역 조회 API", description = "사용자가 입력한 날짜에 해당하는 복용내역을 조회한다.")
-    public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth(@PathVariable String memberId, @PathVariable String date) {
-        Long memberIdLong = Long.parseLong(memberId);
+    public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth( @PathVariable String date) {
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
         LocalDate localDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
-        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberIdLong, localDate);
+        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberId, localDate);
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 
