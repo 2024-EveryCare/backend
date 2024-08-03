@@ -3,6 +3,7 @@ package com.everycare.backend.domain.member.controller;
 import com.everycare.backend.domain.member.dto.*;
 import com.everycare.backend.domain.member.service.MemberService;
 import com.everycare.backend.global.common.RestApiResponse;
+import com.everycare.backend.global.common.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import static com.everycare.backend.global.common.ErrorCode.*;
 import static com.everycare.backend.global.common.SuccessCode.*;
 
 @RestController
-@Tag(name = "Member API", description = "회원가입, 로그인 API ")
+@Tag(name = "Member API", description = "회원가입, 로그인 API")
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {
@@ -35,7 +36,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;  // AuthenticationManager 주입
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping(value = "/signup", produces = "application/json")
     @Operation(summary = "회원가입 API", description = "ID:이메일 형식, PW, 이름, 성별, 생년월일을 받습니다.")
@@ -52,7 +53,6 @@ public class MemberController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // CustomUserDetails에서 member_id와 권한(ROLE) 콘솔 출력
             Object principal = authentication.getPrincipal();
             if (principal instanceof CustomUserDetails) {
                 CustomUserDetails userDetails = (CustomUserDetails) principal;
@@ -67,16 +67,28 @@ public class MemberController {
                 logger.info("Principal: " + principal.toString());
             }
 
-            // 로그인 성공 시 리다이렉트 URL 설정
-            // !!!!!!!!!! 임시로 설정!!! 세션 확인용임
             RestApiResponse response = RestApiResponse.of(LOGIN_SUCCESS);
-            response.setData("/api/v1/medicines/photoUpload"); // 데이터를 설정하는 부분
+            response.setData("/api/v1/medicines/photoUpload");
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(INVALID_PASSWORD));
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(EMAIL_NOT_FOUND));
+        }
+    }
+
+    @PostMapping(value = "/logout", produces = "application/json")
+    @Operation(summary = "로그아웃 API", description = "로그아웃 요청을 처리합니다.")
+    public ResponseEntity<RestApiResponse> logoutUser() {
+        logger.info("Logout request received");
+        try {
+            SecurityContextHolder.clearContext();
+            logger.info("Logout successful");
+            return ResponseEntity.ok(RestApiResponse.of(LOGOUT_SUCCESS));
+        } catch (Exception e) {
+            logger.error("Logout failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RestApiResponse.of(LOGOUT_SUCCESS));
         }
     }
 }

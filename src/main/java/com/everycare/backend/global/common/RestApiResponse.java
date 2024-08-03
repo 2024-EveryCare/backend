@@ -11,6 +11,9 @@ public class RestApiResponse {
     private String message;
     private Object data;
 
+
+
+
     public static RestApiResponse of(SuccessCode successCode){
         return new RestApiResponse(successCode, "");
     }
