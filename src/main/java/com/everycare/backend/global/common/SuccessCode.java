@@ -11,6 +11,7 @@
         // member
         MEMBER_SIGNUP_SUCCESS(HttpStatus.CREATED, "M001", "회원가입 성공"),
         LOGIN_SUCCESS(HttpStatus.OK,"M002" ,"로그인 성공"),
+        LOGOUT_SUCCESS(HttpStatus.OK,"M003" ,"로그아웃 성공"),
 
         //medicine
         FIND_DRUG_SUCCESS(HttpStatus.OK, "F001", "검색한 약물 결과입니다."),
