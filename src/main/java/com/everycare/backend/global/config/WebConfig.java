@@ -9,8 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
+        registry.addResourceHandler("/**","/uploads/**")
                 .addResourceLocations("classpath:/static/")
-                .addResourceLocations("classpath:/templates/");
+                .addResourceLocations("classpath:/templates/")
+                .addResourceLocations("file:uploads/");
     }
 }
