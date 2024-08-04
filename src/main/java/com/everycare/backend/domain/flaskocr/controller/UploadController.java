@@ -35,6 +35,6 @@ public class UploadController {
             throw new IllegalStateException("User details not found");
         }
 
-        return "upload"; // "upload"는 upload.html 파일을 가리킵니다.
+        return "upload.html"; // "upload"는 upload.html 파일을 가리킵니다.
     }
 }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            console.log('Email:', email);  // 콘솔 로그 추가
+            console.log('Password:', password);  // 콘솔 로그 추가
+
+            fetch('/api/v1/members/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include' // 세션 쿠키를 포함하도록 설정
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);  // 콘솔 로그 추가
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);  // 콘솔 로그 추가
+                    if (data.code === 'M002') {  // 로그인 성공 코드
+                        alert('Login successful');
+                        window.location.href = data.data; // 성공 시 리다이렉트
+                    } else if (data.message === 'INVALID_PASSWORD') {
+                        alert('Invalid password');
+                    } else if (data.message === 'EMAIL_NOT_FOUND') {
+                        alert('Email not found');
+                    } else {
+                        alert('Login failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Login failed');
+                });
+        }
+    </script>
+</head>
+<body>
+<h1>Login</h1>
+<form onsubmit="handleSubmit(event)">
+    <div>
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" required/>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required/>
+    </div>
+    <div>
+        <button type="submit">Login</button>
+    </div>
+</form>
+
+<p></p>
+</body>
+</html>
