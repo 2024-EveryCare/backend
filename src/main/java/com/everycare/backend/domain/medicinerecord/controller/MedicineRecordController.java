@@ -25,14 +25,13 @@ import java.util.List;
 import static com.everycare.backend.global.common.SuccessCode.*;
 
 @RestController
-@Tag(name = "MedicineRecord API", description = "복용내역 등록, 조회, 수정, 삭제 API")
+@Tag(name = "MedicineRecord API", description = "복용내역 등록, 조회, 삭제 API")
 @RequestMapping("/api/v1/medicines")
 @RequiredArgsConstructor
 public class MedicineRecordController {
 
     @Autowired
     private MedicineRecordService medicineRecordService;
-
 
     private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
@@ -60,34 +59,6 @@ public class MedicineRecordController {
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
-
-    @GetMapping(value = "/findName/{drugName}", produces = "application/json")
-    @Operation(summary = "의약품 검색 API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 이름 리스트를 전부 전송")
-    public ResponseEntity<RestApiResponse> getDrugNames(@PathVariable String drugName) {
-        List<String> drugNames =  medicineRecordService.findDrugNames(drugName);
-        return ResponseEntity.ok(RestApiResponse.of(FIND_DRUG_SUCCESS, drugNames));
-    }
-
-    @GetMapping(value = "/find-drug-info/{drugName}", produces = "application/json")
-    @Operation(summary = "의약품 검색 (부가 설명 포함) API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 정보 리스트(사진, 이름, 주성분, 회사, 구분)를 전부 전송")
-    public ResponseEntity<RestApiResponse> getDrugInfos(@PathVariable String drugName) {
-        List<DrugInfoDetails> drugInfos =  medicineRecordService.findDrugInfos(drugName);
-        return ResponseEntity.ok(RestApiResponse.of(FIND_DRUG_INFO_SUCCESS, drugInfos));
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<?> handleDrugNotFoundException(BusinessException ex) {
-        return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(RestApiResponse.of(ex.getErrorCode()));
-    }
-
-    @GetMapping(value = "/{drugName}", produces = "application/json")
-    @Operation(summary = "의약품 상세정보 조회 API", description = "사용자가 선택한 의약품의 상세정보 조회 API")
-    public DrugDetails getDrugDetails(@PathVariable String drugName) {
-        return medicineRecordService.findDrugDetailsByName(drugName);
-    }
-
-
     @GetMapping(value = "/records/{memberId}/{date}", produces = "application/json")
     @Operation(summary = "사용자 복용내역 조회 API", description = "사용자가 입력한 날짜에 해당하는 복용내역을 조회한다.")
     public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth( @PathVariable String date) {
@@ -101,33 +72,20 @@ public class MedicineRecordController {
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 
-
     @DeleteMapping(value = "/records", produces = "application/json")
     @Operation(summary = "복용내역 삭제 API", description = "사용자의 특정 복용내역을 삭제합니다.")
     public ResponseEntity<RestApiResponse> deleteRecord(@RequestBody DeleteRecordRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) principal;
-            Long memberId = userDetails.getMemberId();
-
-            medicineRecordService.deleteRecord(memberId, request.getDrugName(), request.getIntakeStart(), request.getIntakeEnd());
-            return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_DELETE_SUCCESS));
-        } else {
-            logger.error("User details not found");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(ErrorCode.UNAUTHORIZED_USER));
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
         }
+        medicineRecordService.deleteRecord(memberId, request.getDrugName(), request.getIntakeStart(), request.getIntakeEnd());
+        return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_DELETE_SUCCESS));
     }
 
-
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<?> handleDrugNotFoundException(BusinessException ex) {
+        return ResponseEntity.status(ex.getErrorCode().getStatus())
+                .body(RestApiResponse.of(ex.getErrorCode()));
+    }
 }
-
-//    public ResponseEntity<RestApiResponse> createRecord(HttpSession session, @RequestBody MedicineRecordRequest request) {
-//        Long memberId = (Long) session.getAttribute("memberId");
-//        if (memberId == null) {
-//            return ResponseEntity.status(401).body(RestApiResponse.of("Unauthorized"));
-//        }
-//        medicineRecordService.saveRecord(memberId, request);
-//        return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
-//    }
