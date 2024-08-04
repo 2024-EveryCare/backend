@@ -2,6 +2,7 @@ package com.everycare.backend.domain.medicinerecord.controller;
 
 import com.everycare.backend.domain.medicinerecord.dto.DrugDetails;
 import com.everycare.backend.domain.medicinerecord.dto.DrugInfoDetails;
+import com.everycare.backend.domain.medicinerecord.dto.FindDrugRequest;
 import com.everycare.backend.domain.medicinerecord.service.MedicineRecordService;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.exception.BusinessException;
@@ -29,7 +30,7 @@ public class MedicineInfoController {
     @GetMapping(value = "/findName", produces = "application/json")
     @Operation(summary = "의약품 검색 API", description = " '타이'를 검색하면 해당하는 단어가 전부 들어간 의약품 이름 리스트를 전부 전송")
     public ResponseEntity<RestApiResponse> getDrugNames(@RequestParam String drugName) {
-        List<String> drugNames =  medicineRecordService.findDrugNames(drugName);
+        List<FindDrugRequest> drugNames =  medicineRecordService.findDrugNames(drugName);
         return ResponseEntity.ok(RestApiResponse.of(FIND_DRUG_SUCCESS, drugNames));
     }
 
