@@ -71,11 +71,13 @@ public class MedicineRecordService {
         return drugs;
         }
 
-    public List<String> findDrugNames(String drugName) {
-        List<String> result = new ArrayList<>();
+    public List<FindDrugRequest> findDrugNames(String drugName) {
+        List<FindDrugRequest> result = new ArrayList<>();
         Optional<Drug> drugOpt = drugRepository.findByName(drugName);
         if (drugOpt.isPresent()) {
-            result.add(drugOpt.get().getName());
+            FindDrugRequest details = new FindDrugRequest();
+            details.setName(drugOpt.get().getName());
+            result.add(details);
         } else {
             // API에서 의약품 정보 조회
             String apiUrl = API_URL + "?serviceKey=" + API_KEY + "&type=json" + "&item_name=" + drugName;
@@ -83,7 +85,12 @@ public class MedicineRecordService {
                 DrugApiResponse apiResponse = restTemplate.getForObject(apiUrl, DrugApiResponse.class);
                 if (apiResponse != null && apiResponse.getBody() != null && apiResponse.getBody().getItems() != null) {
                     List<DrugApiResponse.Item> itemList = apiResponse.getBody().getItems();
-                    result.addAll(itemList.stream().map(DrugApiResponse.Item::getItemName).collect(Collectors.toList()));
+                    result.addAll(itemList.stream().map(item -> {
+                        FindDrugRequest details = new FindDrugRequest();
+                        details.setName(item.getItemName());
+                        details.setImageUrl(item.getBigPrdtImgUrl());
+                        return details;
+                    }).collect(Collectors.toList()));
                 }
             } catch (Exception e) {
                 // 예외 발생 시 무시

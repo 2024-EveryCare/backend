@@ -54,6 +54,10 @@ public class SecurityConfig {
                                 "/api-docs/**",
                                 "/login",
                                 "/api/v1/members/login",
+                                "/api/v1/members/signup",
+                                "/api/v1/medicines/findName",
+                                "/api/v1/medicines/find-drug-info",
+                                "/api/v1/medicines/details",
                                 "/api/v1/members/signup"
                         ).permitAll()
                         .requestMatchers(

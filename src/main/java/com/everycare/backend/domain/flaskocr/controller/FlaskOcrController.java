@@ -41,23 +41,11 @@ public class FlaskOcrController {
     @Getter
     public static class UploadRequest {
         private MultipartFile file;
-        private String member_id;
-
-        // getters and setters
         public MultipartFile getFile() {
             return file;
         }
-
         public void setFile(MultipartFile file) {
             this.file = file;
-        }
-
-        public String getMember_id() {
-            return member_id;
-        }
-
-        public void setMember_id(String member_id) {
-            this.member_id = member_id;
         }
     }
 

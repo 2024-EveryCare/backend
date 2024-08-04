@@ -122,5 +122,6 @@ public class UploadController {
             logger.error("Error retrieving uploaded photos", e);
             return new ArrayList<>();
         }
+
     }
 }
