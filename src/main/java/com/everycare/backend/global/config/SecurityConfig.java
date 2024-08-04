@@ -3,6 +3,8 @@ package com.everycare.backend.global.config;
 import com.everycare.backend.domain.member.service.CustomUserDetailsService;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.common.SuccessCode;
+import com.everycare.backend.global.security.JwtTokenFilter;
+import com.everycare.backend.global.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +29,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.everycare.backend.global.common.SuccessCode.LOGOUT_SUCCESS;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -36,6 +36,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -66,8 +67,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionFixation().newSession()
-                        .maximumSessions(1)
+                        .sessionFixation().migrateSession() // 세션 고정 방지 설정
+                        .maximumSessions(-1) // 동시 세션 제한 제거
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -79,6 +80,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, userDetailsService), BasicAuthenticationFilter.class)
                 .addFilterBefore(new SecurityContextPersistenceFilter(), BasicAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider());
         return http.build();
@@ -107,6 +109,7 @@ public class SecurityConfig {
                 "http://localhost:5000",
                 "http://127.0.0.1:5000",
                 "http://flask-server:5000"));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
@@ -116,7 +119,6 @@ public class SecurityConfig {
         return source;
     }
 
-    //로그아웃 핸틀러 추가!!
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> {

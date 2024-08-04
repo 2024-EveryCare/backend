@@ -20,6 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,6 +35,8 @@ public class FlaskOcrController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final Path uploadDir = Paths.get("uploads");
 
     @Getter
     public static class UploadRequest {
@@ -62,8 +67,8 @@ public class FlaskOcrController {
         }
 
 //        String flaskServerUrl = "http://flask-server:5000/api/v1/medicines/upload";     // 도커용
-        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
-//         String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
+//        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
+        String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -95,11 +100,31 @@ public class FlaskOcrController {
             System.err.println("Failed to delete temporary file: " + convFile.getAbsolutePath());
         }
 
+        // 업로드 폴더의 파일 삭제
+        deleteAllUploadedFiles();
+
         // Map을 JSON 문자열로 변환
         String jsonResponse = objectMapper.writeValueAsString(response.getBody());
 
         return ResponseEntity.status(response.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonResponse);
+    }
+
+    private void deleteAllUploadedFiles() {
+        try {
+            if (Files.exists(uploadDir)) {
+                Files.list(uploadDir)
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                System.err.println("Error deleting file: " + path);
+                            }
+                        });
+            }
+        } catch (IOException e) {
+            System.err.println("Error deleting uploaded files: " + e.getMessage());
+        }
     }
 }
