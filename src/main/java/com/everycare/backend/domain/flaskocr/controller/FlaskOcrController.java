@@ -67,8 +67,8 @@ public class FlaskOcrController {
         }
 
 //        String flaskServerUrl = "http://flask-server:5000/api/v1/medicines/upload";     // 도커용
-//        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
-        String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
+        String flaskServerUrl = "http://host.docker.internal:5000/api/v1/medicines/upload";  // 도커 스프링부트 - 로컬 플라스크
+//        String flaskServerUrl = "http://localhost:5000/api/v1/medicines/upload";     // 로컬용
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
