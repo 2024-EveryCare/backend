@@ -46,8 +46,7 @@ public class MedicineRecordController {
         return null;
     }
 
-
-    @PostMapping(value = "/direct-records/{memberId}", produces = "application/json")
+    @PostMapping(value = "/direct-records", produces = "application/json")
     @Operation(summary = "직접 복용내역 입력 API", description = "OCR없이 직접 복용 내역을 등록합니다.")
     public ResponseEntity<RestApiResponse> createRecord(@RequestBody MedicineRecordRequest request) {
 
@@ -59,7 +58,18 @@ public class MedicineRecordController {
             return ResponseEntity.ok(RestApiResponse.of(MEDICINE_RECORD_SUCCESS));
     }
 
-    @GetMapping(value = "/records/{memberId}/{date}", produces = "application/json")
+    @PostMapping(value = "/photo-result", produces = "application/json")
+    @Operation(summary = "OCR 결과 등록 API", description = "수정된 OCR 결과 복용 내역을 데이터베이스에 등록합니다.")
+    public ResponseEntity<RestApiResponse> createOcrResult(@RequestBody MedicineRecordRequest request) {
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+        medicineRecordService.saveRecord(memberId, request);
+        return ResponseEntity.ok(RestApiResponse.of(OCR_RESULT_SUCCESS));
+    }
+
+    @GetMapping(value = "/records/{date}", produces = "application/json")
     @Operation(summary = "사용자 복용내역 조회 API", description = "사용자가 입력한 날짜에 해당하는 복용내역을 조회한다.")
     public ResponseEntity<RestApiResponse> getMedicineRecordsForMonth( @PathVariable String date) {
         Long memberId = getAuthenticatedMemberId();
