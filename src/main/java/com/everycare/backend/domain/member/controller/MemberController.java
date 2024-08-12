@@ -1,5 +1,6 @@
 package com.everycare.backend.domain.member.controller;
 
+import com.everycare.backend.domain.medicinerecord.dto.DetailedDrugApiResponse;
 import com.everycare.backend.domain.member.dto.*;
 import com.everycare.backend.domain.member.service.MemberService;
 import com.everycare.backend.global.common.RestApiResponse;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.everycare.backend.global.common.ErrorCode.*;
 import static com.everycare.backend.global.common.SuccessCode.*;
@@ -58,23 +62,29 @@ public class MemberController {
                 CustomUserDetails userDetails = (CustomUserDetails) principal;
                 Long memberId = userDetails.getMemberId();
                 String email = userDetails.getUsername();
+                String name = userDetails.getName();
                 logger.info("User ID: " + memberId);
                 logger.info("Email: " + email);
                 userDetails.getAuthorities().forEach(authority -> {
                     logger.info("User Role: " + authority.getAuthority());
                 });
+
+                RestApiResponse response = RestApiResponse.of(LOGIN_SUCCESS);
+                // Adding name to the response
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("name", name);
+                response.setData(responseData);
+
+                return ResponseEntity.ok(response);
             } else {
                 logger.info("Principal: " + principal.toString());
             }
 
-            RestApiResponse response = RestApiResponse.of(LOGIN_SUCCESS);
-            response.setData("/api/v1/medicines/photoUpload");
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(RestApiResponse.of(LOGIN_FAILURE));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(INVALID_PASSWORD));
+            return ResponseEntity.ok(RestApiResponse.of(INVALID_PASSWORD));
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RestApiResponse.of(EMAIL_NOT_FOUND));
+            return ResponseEntity.ok(RestApiResponse.of(EMAIL_NOT_FOUND));
         }
     }
 
@@ -88,7 +98,7 @@ public class MemberController {
             return ResponseEntity.ok(RestApiResponse.of(LOGOUT_SUCCESS));
         } catch (Exception e) {
             logger.error("Logout failed", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RestApiResponse.of(LOGOUT_SUCCESS));
+            return ResponseEntity.ok(RestApiResponse.of(LOGOUT_FAILURE));
         }
     }
 }
