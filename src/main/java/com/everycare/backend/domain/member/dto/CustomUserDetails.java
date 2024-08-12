@@ -39,6 +39,8 @@ public class CustomUserDetails implements UserDetails {
         return member.getId(); // memberId를 반환
     }
 
+    public String getName() { return member.getName(); }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

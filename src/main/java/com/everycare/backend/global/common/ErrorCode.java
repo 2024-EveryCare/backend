@@ -14,6 +14,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"E003" ,"비밀번호가 올바르지 않습니다." ),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST,"E004", "이메일 형식이 올바르지 않습니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST,"E005", "비밀번호 형식이 올바르지 않습니다."),
+    LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "E006", "로그인 실패"),
+    LOGOUT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR,"E007", "로그아웃 실패"),
 
     // drug
     DRUG_NOT_FOUND(HttpStatus.NOT_FOUND, "E006", "일치하는 의약품 항목이 없습니다."),
