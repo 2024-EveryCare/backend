@@ -1,5 +1,6 @@
 package com.everycare.backend.domain.member.service;
 
+import com.everycare.backend.domain.member.dto.MemberInfoResponse;
 import com.everycare.backend.domain.member.dto.SignupRequest;
 import com.everycare.backend.domain.member.entity.Member;
 import com.everycare.backend.domain.member.entity.Role;
@@ -14,10 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.Period;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,5 +125,32 @@ public class MemberService implements UserDetailsService {
         Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
+    }
+
+    public MemberInfoResponse getMemberInfo(Long memberId) {
+        Member member = getMemberById(memberId);
+
+        // 나이 계산
+        int age = calculateAge(member.getBirthdate());
+
+        // 성별 변환
+        String genderStr = "F".equalsIgnoreCase(String.valueOf(member.getGender())) ? "여" : "남";
+
+        MemberInfoResponse response = new MemberInfoResponse();
+        response.setName(member.getName());
+        response.setBirthdate(member.getBirthdate());
+        response.setGenderStr(genderStr);
+        response.setAge(age);
+
+
+        return response;
+    }
+
+    private int calculateAge(LocalDate birthdate) {
+        if (birthdate == null) {
+            throw new IllegalArgumentException("생년월일이 제공되지 않았습니다.");
+        }
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthdate, currentDate).getYears();
     }
 }
