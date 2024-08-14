@@ -26,4 +26,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorCode.getStatus());
     }
 
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<RestApiResponse> handleUnauthorizedAccessException(UnauthorizedAccessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        RestApiResponse errorResponse = RestApiResponse.of(ErrorCode.UNAUTHORIZED_USER);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
 }
