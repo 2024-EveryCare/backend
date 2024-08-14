@@ -190,6 +190,21 @@ public class MedicineRecordService {
                 }).collect(Collectors.toList());
     }
 
+    public List<MedicineAllRecordResponse> getMedicineRecordsAll(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        List<MedicineRecord> records = medicineRecordRepository.findByMember(member);
+
+        return records.stream()
+                .map(record -> {
+                    MedicineAllRecordResponse response = new MedicineAllRecordResponse();
+                    response.setDrugNames(record.getDrugs().stream().map(Drug::getName).collect(Collectors.toList()));
+                    response.setIntakeStart(record.getIntakeStart());
+                    response.setIntakeEnd(record.getIntakeEnd());
+                    return response;
+                }).collect(Collectors.toList());
+    }
 
     public void deleteRecord(Long memberId, String drugName, LocalDate intakeStart, LocalDate intakeEnd) {
         Member member = memberRepository.findById(memberId)
