@@ -82,6 +82,17 @@ public class MedicineRecordController {
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 
+    @GetMapping(value = "/records/list", produces = "application/json")
+    @Operation(summary = "모든 복용내역 조회 API", description = "모든 복용내역을 조회하여 달력에 매핑하기 위한 API입니다.")
+    public ResponseEntity<RestApiResponse> getMedicineRecords() {
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
+        }
+        List<MedicineAllRecordResponse> records = medicineRecordService.getMedicineRecordsAll(memberId);
+        return ResponseEntity.ok(RestApiResponse.of(FIND_ALL_MEDICINE_RECORD_SUCCESS, records));
+    }
+
     @DeleteMapping(value = "/records", produces = "application/json")
     @Operation(summary = "복용내역 삭제 API", description = "사용자의 특정 복용내역을 삭제합니다.")
     public ResponseEntity<RestApiResponse> deleteRecord(@RequestBody DeleteRecordRequest request) {
