@@ -10,5 +10,5 @@ import java.util.List;
 public interface MedicineRecordRepository extends JpaRepository<MedicineRecord, Long> {
     List<MedicineRecord> findByMemberAndIntakeStartBetween(Member member, LocalDate startDate, LocalDate endDate);
     List<MedicineRecord> findByMemberAndIntakeStartAndIntakeEnd(Member member, LocalDate intakeStart, LocalDate intakeEnd);
-
+    List<MedicineRecord> findByMember(Member member);
 }

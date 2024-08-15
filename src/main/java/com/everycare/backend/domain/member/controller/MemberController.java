@@ -5,6 +5,8 @@ import com.everycare.backend.domain.member.dto.*;
 import com.everycare.backend.domain.member.service.MemberService;
 import com.everycare.backend.global.common.RestApiResponse;
 import com.everycare.backend.global.common.SuccessCode;
+import com.everycare.backend.global.exception.BusinessException;
+import com.everycare.backend.global.exception.UnauthorizedAccessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +41,17 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    private Long getAuthenticatedMemberId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            return userDetails.getMemberId();
+        }
+        return null;
+    }
+
     @PostMapping(value = "/signup", produces = "application/json")
     @Operation(summary = "회원가입 API", description = "ID:이메일 형식, PW, 이름, 성별, 생년월일을 받습니다.")
     public ResponseEntity<RestApiResponse> registerUser(@RequestBody SignupRequest signupRequest) {
@@ -50,6 +60,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "로그인 API", description = "세션을 위한 필수 과정 !!")
     public ResponseEntity<RestApiResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -100,5 +111,16 @@ public class MemberController {
             logger.error("Logout failed", e);
             return ResponseEntity.ok(RestApiResponse.of(LOGOUT_FAILURE));
         }
+    }
+
+    @GetMapping(value = "/mypage", produces = "application/json")
+    @Operation(summary = "회원정보 API", description = "마이페이지 - 회원정보를 불러옵니다.")
+    public ResponseEntity<RestApiResponse> memberInfo() {
+        Long memberId = getAuthenticatedMemberId();
+        if (memberId == null) {
+            throw new UnauthorizedAccessException(UNAUTHORIZED_USER);
+        }
+        MemberInfoResponse memberInfo = memberService.getMemberInfo(memberId);
+        return ResponseEntity.ok(RestApiResponse.of(MEMBER_INFO_SUCCESS, memberInfo));
     }
 }
