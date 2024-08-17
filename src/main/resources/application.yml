@@ -6,17 +6,17 @@ spring:
       name: user  # Placeholder for a more secure authentication mechanism (see note below)
       password: 1111  # Replace with encrypted password using Spring Security
 # 로컬용
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/everycaredb
-#    username: everycareroot
-#    password: Everycare2024!
-# 도커용
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/everycaredb
+    url: jdbc:mysql://localhost:3306/everycaredb
     username: everycareroot
     password: Everycare2024!
+# 도커용
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://mysql:3306/everycaredb
+#    username: everycareroot
+#    password: Everycare2024!
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,6 +33,12 @@ spring:
     suffix: .html
 
 server:
+#  servlet:
+#    session:
+#      cookie:
+#        secure: false
+#        http-only: false
+#        same-site: none
   address: 0.0.0.0
   port: 8080
 

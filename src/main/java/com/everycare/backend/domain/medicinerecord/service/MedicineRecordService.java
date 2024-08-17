@@ -163,32 +163,30 @@ public class MedicineRecordService {
         return null;
     }
 
-    public List<MonthlyMedicineRecordResponse> getMedicineRecordsForMonth(Long memberId, LocalDate date) {
+    public List<MedicineRecordResponse> getMedicineRecordsForMonth(Long memberId, LocalDate date) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        LocalDate startOfMonth = date.withDayOfMonth(1);
-        LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+        List<MedicineRecord> records = medicineRecordRepository.findByMember(member);
 
-        List<MedicineRecord> records = medicineRecordRepository.findByMemberAndIntakeStartBetween(member, startOfMonth, endOfMonth);
+        List<MedicineRecord> filteredRecords = records.stream()
+                .filter(record -> !date.isBefore(record.getIntakeStart()) && !date.isAfter(record.getIntakeEnd()))
+                .collect(Collectors.toList());
 
-        return records.stream()
-                .collect(Collectors.groupingBy(MedicineRecord::getIntakeStart))
-                .entrySet().stream()
-                .map(entry -> {
-                    MonthlyMedicineRecordResponse response = new MonthlyMedicineRecordResponse();
-                    response.setDate(entry.getKey());
-                    response.setRecords(entry.getValue().stream().map(record -> {
-                        MedicineRecordResponse recordResponse = new MedicineRecordResponse();
-                        recordResponse.setDrugNames(record.getDrugs().stream().map(Drug::getName).collect(Collectors.toList()));
-                        recordResponse.setIntakeDaily(record.getIntakeDaily());
-                        recordResponse.setIntakeStart(record.getIntakeStart());
-                        recordResponse.setIntakeEnd(record.getIntakeEnd());
-                        return recordResponse;
-                    }).collect(Collectors.toList()));
-                    return response;
-                }).collect(Collectors.toList());
+
+        // 복용내역을 응답 형태로 변환합니다.
+        return filteredRecords.stream()
+                .map(record -> {
+                    MedicineRecordResponse recordResponse = new MedicineRecordResponse();
+                    recordResponse.setDrugNames(record.getDrugs().stream().map(Drug::getName).collect(Collectors.toList()));
+                    recordResponse.setIntakeDaily(record.getIntakeDaily());
+                    recordResponse.setIntakeStart(record.getIntakeStart());
+                    recordResponse.setIntakeEnd(record.getIntakeEnd());
+                    return recordResponse;
+                })
+                .collect(Collectors.toList());
     }
+
 
     public List<MedicineAllRecordResponse> getMedicineRecordsAll(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -202,6 +200,7 @@ public class MedicineRecordService {
                     response.setDrugNames(record.getDrugs().stream().map(Drug::getName).collect(Collectors.toList()));
                     response.setIntakeStart(record.getIntakeStart());
                     response.setIntakeEnd(record.getIntakeEnd());
+                    response.setIntakeDaily(record.getIntakeDaily());
                     return response;
                 }).collect(Collectors.toList());
     }

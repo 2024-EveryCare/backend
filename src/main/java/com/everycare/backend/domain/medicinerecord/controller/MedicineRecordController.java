@@ -78,7 +78,7 @@ public class MedicineRecordController {
         }
 
         LocalDate localDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
-        List<MonthlyMedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberId, localDate);
+        List<MedicineRecordResponse> records = medicineRecordService.getMedicineRecordsForMonth(memberId, localDate);
         return ResponseEntity.ok(RestApiResponse.of(FIND_MEDICINE_RECORD_SUCCESS, records));
     }
 
