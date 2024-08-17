@@ -109,7 +109,6 @@ public class SecurityConfig {
                 "http://localhost:5000",
                 "http://127.0.0.1:5000",
                 "http://flask-server:5000"));
-
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));

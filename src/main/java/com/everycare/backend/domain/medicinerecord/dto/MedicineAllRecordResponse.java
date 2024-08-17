@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 public class MedicineAllRecordResponse {
     private List<String> drugNames;
+    private String intakeDaily;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate intakeStart;
