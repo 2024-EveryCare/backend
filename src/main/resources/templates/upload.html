@@ -99,11 +99,19 @@
 
 <div id="message" th:text="${message}"></div>
 
+<!--<h2>Uploaded Photos:</h2>-->
+<!--<div id="photos">-->
+<!--  <div th:each="photo : ${uploadedPhotos}">-->
+<!--    &lt;!&ndash; 상대 경로 대신 실제 파일 경로를 설정 &ndash;&gt;-->
+<!--    <img th:src="@{'/uploads/' + ${photo}}" width="100" height="100" onclick="selectPhoto(this)">-->
+<!--  </div>-->
+<!--</div>-->
+
 <h2>Uploaded Photos:</h2>
 <div id="photos">
   <div th:each="photo : ${uploadedPhotos}">
-    <!-- 상대 경로 대신 실제 파일 경로를 설정 -->
-    <img th:src="@{'/uploads/' + ${photo}}" width="100" height="100" onclick="selectPhoto(this)">
+    <!-- 사용자별 경로를 포함하여 이미지 경로를 설정 -->
+    <img th:src="@{'/uploads/' + ${member_id} + '/' + ${photo}}" width="100" height="100" onclick="selectPhoto(this)">
   </div>
 </div>
 
