@@ -40,6 +40,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: Everycare2024!
       SPRING_SECURITY_USER_NAME: user
       SPRING_SECURITY_USER_PASSWORD: 1111
+      OPENAI_API_KEY: api_key
+      CHATGPT_API_KEY: api_key
+
       # SPRING_REDIS_HOST: redis
     depends_on:
       mysql:
