@@ -1,3 +1,5 @@
+.env
+
 # Compiled class file
 *.class
 
@@ -85,7 +87,6 @@ nbdist/
 spring.log
 
 # Ignore OS files
-.DS_Store
 Thumbs.db
 
 application.properties
