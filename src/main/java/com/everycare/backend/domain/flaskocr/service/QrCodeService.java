@@ -1,5 +1,6 @@
-package com.everycare.backend.domain.qrcode.service;
+package com.everycare.backend.domain.flaskocr.service;
 
+import com.everycare.backend.domain.flaskocr.repository.QrCodeRepository;
 import com.google.zxing.WriterException;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +16,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 
 @Service
-public class QrCodeServiceImpl implements QrCodeService {
+public class QrCodeService implements QrCodeRepository {
 
     @Override
     public byte[] generateQrCode(String link) throws IOException, WriterException {

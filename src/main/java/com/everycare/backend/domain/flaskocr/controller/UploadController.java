@@ -2,7 +2,7 @@ package com.everycare.backend.domain.flaskocr.controller;
 
 //html 테스트용
 //import com.everycare.backend.domain.member.dto.CustomUserDetails;
-//import com.everycare.backend.domain.qrcode.service.QrCodeService;
+//import com.everycare.backend.domain.flaskocr.service.QrCodeService;
 //import com.everycare.backend.global.security.JwtTokenProvider;
 //import com.google.zxing.WriterException;
 //import org.slf4j.Logger;
@@ -81,7 +81,7 @@ package com.everycare.backend.domain.flaskocr.controller;
 
 import com.everycare.backend.domain.flaskocr.dto.PhotoUploadResponse;
 import com.everycare.backend.domain.member.dto.CustomUserDetails;
-import com.everycare.backend.domain.qrcode.service.QrCodeService;
+import com.everycare.backend.domain.flaskocr.repository.QrCodeRepository;
 import com.everycare.backend.global.security.JwtTokenProvider;
 import com.google.zxing.WriterException;
 import org.slf4j.Logger;
@@ -92,7 +92,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -106,13 +105,13 @@ import java.util.stream.Collectors;
 public class UploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
-    private final QrCodeService qrCodeService;
+    private final QrCodeRepository qrCodeRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final Path uploadDir = Paths.get("uploads");
 
     @Autowired
-    public UploadController(QrCodeService qrCodeService, JwtTokenProvider jwtTokenProvider) {
-        this.qrCodeService = qrCodeService;
+    public UploadController(QrCodeRepository qrCodeRepository, JwtTokenProvider jwtTokenProvider) {
+        this.qrCodeRepository = qrCodeRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -136,7 +135,7 @@ public class UploadController {
                 String link = "http://192.168.219.100:8080/api/v1/medicines/uploadOnlyPhotoMobile?token=" + token;
 
                 // QR 코드 생성
-                byte[] qrCodeBytes = qrCodeService.generateQrCode(link);
+                byte[] qrCodeBytes = qrCodeRepository.generateQrCode(link);
                 String qrCodeBase64 = Base64.getEncoder().encodeToString(qrCodeBytes);
 
                 // JSON 데이터 추가
