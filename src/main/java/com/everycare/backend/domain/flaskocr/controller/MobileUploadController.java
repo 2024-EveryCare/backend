@@ -1,18 +1,12 @@
 package com.everycare.backend.domain.flaskocr.controller;
 
 import com.everycare.backend.domain.member.dto.CustomUserDetails;
-import com.everycare.backend.domain.qrcode.service.QrCodeService;
-import com.everycare.backend.global.security.JwtTokenProvider;
-import com.google.zxing.WriterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 //html 테스트용
 //@Controller
@@ -83,21 +76,7 @@ import java.util.stream.Collectors;
 //    }
 //}
 
-import com.everycare.backend.domain.member.dto.CustomUserDetails;
 import com.everycare.backend.domain.flaskocr.dto.MobileUploadResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/v1/medicines")
