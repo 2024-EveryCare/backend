@@ -36,8 +36,10 @@ package com.everycare.backend.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -51,6 +53,9 @@ import java.util.List;
 
 @Configuration
 public class AppConfig {
+
+    @Value("${CHATGPT_API_KEY}")
+    private String CHATGPT_API_KEY;
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -70,8 +75,17 @@ public class AppConfig {
         messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         messageConverters.add(new FormHttpMessageConverter());
 
-
         restTemplate.setMessageConverters(messageConverters);
+
+
+        // Authorization 헤더 추가를 위한 인터셉터 설정
+        ClientHttpRequestInterceptor authInterceptor = (request, body, execution) -> {
+            request.getHeaders().add("Authorization", "Bearer " + CHATGPT_API_KEY);
+            return execution.execute(request, body);
+        };
+
+        restTemplate.getInterceptors().add(authInterceptor);
+
 
         return restTemplate;
     }
