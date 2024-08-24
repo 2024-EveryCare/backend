@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: Everycare2024!
-      MYSQL_DATABASE: everycaredb
-      MYSQL_USER: everycareroot
-      MYSQL_PASSWORD: Everycare2024!
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
@@ -20,14 +20,16 @@ services:
       retries: 3
     networks:
       - everycare-network
-#
-#  redis:
-#    image: redis:latest
-#    container_name: redis
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - redis-data:/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - everycare-network
 
   backend:
     build:
@@ -35,19 +37,21 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/everycaredb
-      SPRING_DATASOURCE_USERNAME: everycareroot
-      SPRING_DATASOURCE_PASSWORD: Everycare2024!
-      SPRING_SECURITY_USER_NAME: user
-      SPRING_SECURITY_USER_PASSWORD: 1111
-      OPENAI_API_KEY: api_key
-      CHATGPT_API_KEY: api_key
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_SECURITY_USER_NAME: ${SPRING_SECURITY_USER_NAME}
+      SPRING_SECURITY_USER_PASSWORD: ${SPRING_SECURITY_USER_PASSWORD}
+      OPENAI_API_URL: ${OPENAI_API_URL}
+      CHATGPT_API_KEY: ${CHATGPT_API_KEY}
 
-      # SPRING_REDIS_HOST: redis
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     depends_on:
       mysql:
         condition: service_healthy
-    #  - redis
+      redis:
+        condition: service_started
     volumes:
       - .:/app
       - ./logs:/var/log/spring-boot
