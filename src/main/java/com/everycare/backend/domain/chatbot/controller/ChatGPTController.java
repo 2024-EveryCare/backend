@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,8 +55,6 @@ public class ChatGPTController {
         // Redis에서 이전 대화 기록 가져오기
         String previousChat = chatSessionService.getChatHistory(memberId);
 
-        System.out.println("Previous Chat: " + previousChat);
-
         // 새로운 대화 내용을 추가하여 대화 기록 생성
         String combinedChat = (previousChat == null ? "" : previousChat + "\n") + promptDTO.getPrompt();
 
@@ -97,7 +96,34 @@ public class ChatGPTController {
         // ChatGptService를 통해 복용 내역 통계를 생성
         MedicationStatisticsResponse statisticsResponse = chatGptService.generateMedicationStatistics(Long.parseLong(memberId));
 
+        System.out.println("Previous Chat: " + previousChat);
+
         // API 응답 포맷으로 반환
         return ResponseEntity.ok(RestApiResponse.of(MONITORING_RESPONSE_SUCCESS, statisticsResponse));
+    }
+
+    @GetMapping("/newchat")
+    public ResponseEntity<String> deleteChatHistoryForNewSession() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        String memberId = null;
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            memberId = userDetails.getMemberId().toString(); // memberId가 String 타입이라고 가정
+        }
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: member ID not found");
+        }
+
+        // 사용자의 모든 채팅 기록 삭제
+        chatSessionService.deleteAllChatHistory(memberId);
+        // Redis에서 이전 대화 기록 가져오기
+        String previousChat1 = chatSessionService.getChatHistory(memberId);
+        System.out.println("Previous Chat: " + previousChat1);
+
+
+        return ResponseEntity.ok("All chat history deleted successfully.");
     }
 }

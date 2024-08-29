@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Set;
 
 @Service
 public class ChatSessionService {
@@ -29,5 +30,15 @@ public class ChatSessionService {
 
     public void deleteChatHistory(String sessionId) {
         redisTemplate.delete(sessionId);
+    }
+
+    // 모든 채팅 기록 삭제 기능 - memberId 타입을 String으로 수정
+    public void deleteAllChatHistory(String memberId) {
+        String pattern = memberId;
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            System.out.println("Deleted keys: " + keys);
+        }
     }
 }
