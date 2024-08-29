@@ -74,6 +74,7 @@ public class ChatGPTController {
 
         // Redis에 대화 기록 업데이트
         chatSessionService.saveChatHistory(memberId, combinedChat + "\n" + content);
+        System.out.println("Previous Chat: " + previousChat);
 
         // API 응답 포맷으로 반환
         return RestApiResponse.of(CHATGPT_RESPONSE_SUCCESS, new ChatResponseDTO(content));
@@ -95,8 +96,6 @@ public class ChatGPTController {
 
         // ChatGptService를 통해 복용 내역 통계를 생성
         MedicationStatisticsResponse statisticsResponse = chatGptService.generateMedicationStatistics(Long.parseLong(memberId));
-
-        System.out.println("Previous Chat: " + previousChat);
 
         // API 응답 포맷으로 반환
         return ResponseEntity.ok(RestApiResponse.of(MONITORING_RESPONSE_SUCCESS, statisticsResponse));
