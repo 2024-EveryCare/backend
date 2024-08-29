@@ -83,6 +83,19 @@ services:
     networks:
       - everycare-network
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - everycare-network
+
 #  flask:
 #    build:
 #      context: ../flask-server
