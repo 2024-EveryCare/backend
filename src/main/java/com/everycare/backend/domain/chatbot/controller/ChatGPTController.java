@@ -1,13 +1,11 @@
 package com.everycare.backend.domain.chatbot.controller;
 
-import com.everycare.backend.domain.chatbot.dto.ChatCompletionRequest;
-import com.everycare.backend.domain.chatbot.dto.ChatCompletionResponse;
-import com.everycare.backend.domain.chatbot.dto.ChatResponseDTO;
-import com.everycare.backend.domain.chatbot.dto.PromptDTO;
+import com.everycare.backend.domain.chatbot.dto.*;
+import com.everycare.backend.domain.chatbot.service.ChatGptService;
 import com.everycare.backend.global.common.RestApiResponse;
-import com.everycare.backend.global.common.SuccessCode;
 import com.everycare.backend.domain.chatbot.service.ChatSessionService;
 import com.everycare.backend.domain.member.dto.CustomUserDetails;
+import com.everycare.backend.global.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import static com.everycare.backend.global.common.ErrorCode.UNAUTHORIZED_USER;
+import static com.everycare.backend.global.common.SuccessCode.CHATGPT_RESPONSE_SUCCESS;
+import static com.everycare.backend.global.common.SuccessCode.MONITORING_RESPONSE_SUCCESS;
 
 @RestController
 @Tag(name = "ChatGPT API", description = "챗GPT API - 일반 챗봇 / 복용 내역 모니터링")
@@ -30,6 +32,10 @@ public class ChatGPTController {
 
     @Autowired
     private ChatSessionService chatSessionService;
+
+    @Autowired
+    private ChatGptService chatGptService;
+
 
     @PostMapping("/ask")
     @Operation(summary = "일반 채팅 API", description = "챗봇에게 질문할 때 사용")
@@ -67,12 +73,32 @@ public class ChatGPTController {
         String content = response.getChoices().get(0).getMessage().getContent();
 
         // Redis에 대화 기록 업데이트
-        chatSessionService.saveChatHistory(memberId, combinedChat + "\nAssistant: " + content);
-
+        chatSessionService.saveChatHistory(memberId, combinedChat + "\n" + content);
         System.out.println("Previous Chat: " + previousChat);
 
         // API 응답 포맷으로 반환
-        return RestApiResponse.of(SuccessCode.CHATGPT_RESPONSE_SUCCESS, new ChatResponseDTO(content));
+        return RestApiResponse.of(CHATGPT_RESPONSE_SUCCESS, new ChatResponseDTO(content));
+    }
+
+    @GetMapping("/monitoring")
+    @Operation(summary = "복용 내역 모니터링 API", description = "복용 내역 모니터링 버튼 클릭시 챗봇이 통계내주는 응답.")
+    public ResponseEntity<RestApiResponse> monitorMedicationHistory() {
+        // 현재 인증된 사용자의 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String memberId;
+
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            memberId = userDetails.getMemberId().toString();
+        } else {
+            throw new BusinessException(UNAUTHORIZED_USER);
+        }
+
+        // ChatGptService를 통해 복용 내역 통계를 생성
+        MedicationStatisticsResponse statisticsResponse = chatGptService.generateMedicationStatistics(Long.parseLong(memberId));
+
+        // API 응답 포맷으로 반환
+        return ResponseEntity.ok(RestApiResponse.of(MONITORING_RESPONSE_SUCCESS, statisticsResponse));
     }
 
     @GetMapping("/newchat")

@@ -23,7 +23,8 @@
         MEDICINE_RECORD_DELETE_SUCCESS(HttpStatus.OK, "R005", "복용 내역 삭제 성공"),
 
         // ChatGPT
-        CHATGPT_RESPONSE_SUCCESS(HttpStatus.OK, "C001", "챗GPT 응답 성공");
+        CHATGPT_RESPONSE_SUCCESS(HttpStatus.OK, "C001", "챗GPT 응답 성공"),
+        MONITORING_RESPONSE_SUCCESS(HttpStatus.OK, "C002", "복용 내역 모니터링 챗봇 응답 성공"),
         ;
 
         private HttpStatus status;
