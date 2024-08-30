@@ -87,11 +87,30 @@ public class MobileUploadController {
     // Root directory for file uploads
     private final Path rootUploadDir = Paths.get("uploads");
 
+    // 원래 코드 - json 응답 리턴 : 아이폰 사파리에서는 json 응답 표시 불가능 함!!
+//    @GetMapping(value = "/uploadOnlyPhotoMobile", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<MobileUploadResponse> showUploadOnlyPhotoPage() {
+//        // API endpoint doesn't actually return HTML, so provide a JSON response
+//        MobileUploadResponse response = new MobileUploadResponse();
+//        return ResponseEntity.ok(response);
+//    }
+
+
+    //연결 확인용 - 강제로 html 응답으로 변환 - 연결 확인한 후에 위의 코드로 연동 진행하면 됩니다.
     @GetMapping("/uploadOnlyPhotoMobile")
-    public ResponseEntity<MobileUploadResponse> showUploadOnlyPhotoPage() {
-        // API endpoint doesn't actually return HTML, so provide a JSON response
+    public ResponseEntity<String> showUploadOnlyPhotoPage() {
         MobileUploadResponse response = new MobileUploadResponse();
-        return ResponseEntity.ok(response);
+        response.setMessage("Photo uploaded successfully");
+
+        // HTML 형식으로 변환
+        String htmlResponse = "<html><body>" +
+                "<h1>Upload Status</h1>" +
+                "<table border='1'>" +
+                "<tr><th>Message</th></tr>" +
+                "<tr><td>" + response.getMessage() + "</td></tr>" +
+                "</table>" +
+                "</body></html>";
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(htmlResponse);
     }
 
     @PostMapping(value = "/uploadOnlyPhotoMobile",

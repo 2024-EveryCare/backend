@@ -131,8 +131,8 @@ public class UploadController {
                 // JWT 토큰 생성
                 String token = jwtTokenProvider.createToken(userDetails.getUsername());
 
-                // QR 코드 링크 생성 (토큰 포함)
-                String link = "http://192.168.219.100:8080/api/v1/medicines/uploadOnlyPhotoMobile?token=" + token;
+                // QR 코드 링크 생성 (토큰 포함),  중간 ip 주소 각자 걸루 변경!!
+                String link = "http://" + "192.168.219.111" + "/api/v1/medicines/uploadOnlyPhotoMobile?token=" + token;
 
                 // QR 코드 생성
                 byte[] qrCodeBytes = qrCodeRepository.generateQrCode(link);
