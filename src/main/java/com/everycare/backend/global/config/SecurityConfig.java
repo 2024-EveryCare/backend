@@ -104,6 +104,11 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
+                "http://everycare.site",
+                "https://everycare.site",
+                "https://everycare.site:8080",
+                "https://everycare.site:5173",
+                "https://everycare.site:5000",
                 "http://localhost",
                 "http://localhost:8080",
                 "http://localhost:5173",
