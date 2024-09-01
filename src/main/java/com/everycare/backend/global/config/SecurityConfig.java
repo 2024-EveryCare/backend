@@ -105,7 +105,9 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
                 "http://everycare.site",
+                "http://www.everycare.site",
                 "https://everycare.site",
+                "https://www.everycare.site",
                 "https://everycare.site:8080",
                 "https://everycare.site:5173",
                 "https://everycare.site:5000",
